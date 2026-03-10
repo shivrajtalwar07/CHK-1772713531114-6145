@@ -19,7 +19,7 @@ const App = () => {
         limit={1}
       />
       <Routes>
-
+       
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
