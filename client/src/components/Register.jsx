@@ -1,150 +1,195 @@
-import { Mail, Lock, User } from "lucide-react";
-import { Link , useNavigate } from "react-router-dom";
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { toast } from "react-toastify";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
-  
-const navigate = useNavigate();
-const [error , setError] = useState("");
+  const navigate = useNavigate();
 
-
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("All fields are required");
-      toast.error(error);
+    if (!formData.name || !formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      toast.error(error);
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
       return;
     }
 
-    // register user
-    if(error === ""){
-      axios.post("http://localhost:3000/api/auth/register", {
-        name,
-        email,
-        password,
-      })
-      .then((res) => {
-        console.log(res.data);
-        toast.success("Registration successful");
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Registration failed");
+    setIsLoading(true);
+    try {
+      await axios.post("http://localhost:3000/api/auth/register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
       });
+      toast.success("Registration successful! Please login.");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Registration failed. Try again.");
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
     <div className="min-h-screen flex bg-[#F8FAFC]">
-
       {/* LEFT BRAND SECTION */}
-      <div className="hidden md:flex w-1/2 bg-[#1E3A8A] text-white flex-col justify-center px-16">
-        <h1 className="text-4xl font-bold mb-4">DataPortal</h1>
-        <p className="text-lg text-blue-100">
-          A platform to visualize and explore public data through interactive charts.
-        </p>
+      <div className="hidden md:flex w-1/2 bg-[#1E3A8A] text-white flex-col justify-center px-16 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px] opacity-20 -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500 rounded-full blur-[100px] opacity-20 -ml-32 -mb-32"></div>
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-8">
+            <div className="w-10 h-10 bg-white/10 backdrop-blur-lg rounded-xl flex items-center justify-center border border-white/20">
+              <div className="w-5 h-5 bg-white rounded-sm rotate-45"></div>
+            </div>
+            <span className="text-2xl font-bold tracking-tight">DataPortal</span>
+          </div>
+
+          <h1 className="text-5xl font-extrabold mb-6 leading-tight">
+            Join the future of <br />
+            <span className="text-blue-400">Data Visualization.</span>
+          </h1>
+          <p className="text-xl text-blue-100/80 max-w-lg leading-relaxed">
+            Create an account to save your custom dashboards, export premium datasets, and collaborate with India's largest data community.
+          </p>
+
+          <div className="mt-12 flex items-center gap-4">
+
+
+          </div>
+        </div>
       </div>
 
       {/* RIGHT REGISTER SECTION */}
-      <div className="w-full md:w-1/2 flex items-center justify-center">
-        <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg border border-[#E5E7EB]">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+        <div className="bg-white w-full max-w-md p-10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-[#E5E7EB] fade-up">
+          <div className="mb-10 text-center md:text-left">
+            <h2 className="text-3xl font-bold text-[#0F172A] mb-3">
+              Create Account
+            </h2>
+            <p className="text-[#64748B]">
+              Start your journey with DataPortal today
+            </p>
+          </div>
 
-          <h2 className="text-2xl font-bold text-[#0F172A] mb-2">
-            Create an account
-          </h2>
-          <p className="text-sm text-[#64748B] mb-6">
-            Start managing your DataPortal
-          </p>
-
-          <form onSubmit={handleRegister}>
-            {/* FULL NAME */}
-            <div className="mb-4">
-              <label className="text-sm text-[#0F172A]">Full Name</label>
-              <div className="flex items-center border rounded-lg px-3 mt-1">
-                <User size={18} className="text-[#64748B]" />
+          <form onSubmit={handleRegister} className="space-y-5">
+            {/* NAME */}
+            <div>
+              <label className="text-sm font-semibold text-[#334155] mb-1.5 block">Full Name</label>
+              <div className="group flex items-center border border-[#E2E8F0] rounded-2xl px-4 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
+                <User size={18} className="text-[#94A3B8] group-focus-within:text-blue-500" />
                 <input
+                  name="name"
                   type="text"
                   placeholder="John Doe"
-                  className="w-full px-2 py-2 outline-none"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3 py-3.5 outline-none bg-transparent placeholder:text-[#94A3B8] text-[#1E293B]"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
 
             {/* EMAIL */}
-            <div className="mb-4">
-              <label className="text-sm text-[#0F172A]">Email</label>
-              <div className="flex items-center border rounded-lg px-3 mt-1">
-                <Mail size={18} className="text-[#64748B]" />
+            <div>
+              <label className="text-sm font-semibold text-[#334155] mb-1.5 block">Email Address</label>
+              <div className="group flex items-center border border-[#E2E8F0] rounded-2xl px-4 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
+                <Mail size={18} className="text-[#94A3B8] group-focus-within:text-blue-500" />
                 <input
+                  name="email"
                   type="email"
-                  placeholder="you@example.com"
-                  className="w-full px-2 py-2 outline-none"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="w-full px-3 py-3.5 outline-none bg-transparent placeholder:text-[#94A3B8] text-[#1E293B]"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
 
             {/* PASSWORD */}
-            <div className="mb-4">
-              <label className="text-sm text-[#0F172A]">Password</label>
-              <div className="flex items-center border rounded-lg px-3 mt-1">
-                <Lock size={18} className="text-[#64748B]" />
+            <div>
+              <label className="text-sm font-semibold text-[#334155] mb-1.5 block">Password</label>
+              <div className="group flex items-center border border-[#E2E8F0] rounded-2xl px-4 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
+                <Lock size={18} className="text-[#94A3B8] group-focus-within:text-blue-500" />
                 <input
-                  type="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="w-full px-2 py-2 outline-none"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-3 py-3.5 outline-none bg-transparent placeholder:text-[#94A3B8] text-[#1E293B]"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[#94A3B8] hover:text-[#0F172A] transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
             {/* CONFIRM PASSWORD */}
-            <div className="mb-6">
-              <label className="text-sm text-[#0F172A]">Confirm Password</label>
-              <div className="flex items-center border rounded-lg px-3 mt-1">
-                <Lock size={18} className="text-[#64748B]" />
+            <div>
+              <label className="text-sm font-semibold text-[#334155] mb-1.5 block">Confirm Password</label>
+              <div className="group flex items-center border border-[#E2E8F0] rounded-2xl px-4 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
+                <Lock size={18} className="text-[#94A3B8] group-focus-within:text-blue-500" />
                 <input
-                  type="password"
+                  name="confirmPassword"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="w-full px-2 py-2 outline-none"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-3.5 outline-none bg-transparent placeholder:text-[#94A3B8] text-[#1E293B]"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
 
-            {/* BUTTON */}
-            <button className="w-full bg-[#1E3A8A] hover:bg-[#1E40AF] text-white py-2 rounded-lg transition">
-              Create account
+            {/* REGISTER BUTTON */}
+            <button
+              disabled={isLoading}
+              className="w-full bg-[#1E3A8A] hover:bg-[#1E40AF] text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-900/10 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2 group"
+            >
+              {isLoading ? "Creating account..." : (
+                <>
+                  Register Now
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </form>
 
           {/* FOOTER */}
-          <p className="text-sm text-center text-[#64748B] mt-6">
-            Already have an account?{" "}
-            <span className="text-[#22C55E] cursor-pointer font-medium">
-              <Link to="/">Sign in</Link>
-            </span>
-          </p>
-
+          <div className="mt-10 text-center">
+            <p className="text-[#64748B] text-sm">
+              Already have an account?{" "}
+              <Link to="/" className="text-blue-600 hover:text-blue-700 font-bold ml-1 transition-colors">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

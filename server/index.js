@@ -64,6 +64,27 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
+app.post("/api/auth/reset-password", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const hashedPassword = await hashPassword(password);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 
 const PORT = process.env.PORT || 3000;

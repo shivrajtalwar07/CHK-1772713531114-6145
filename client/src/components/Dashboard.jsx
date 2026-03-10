@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   AreaChart, Area, RadarChart, Radar, PolarGrid, PolarAngleAxis,
@@ -254,7 +255,7 @@ const TS = {
 /* ─── DATA GENERATORS ───────────────────────────────────────────────────── */
 function makeYearData(ds) {
   const base = { population: 820, gdp: 420, health: 310, education: 550, environment: 200 };
-  return ["2018", "2019", "2020", "2021", "2022", "2023", "2024"].map((y, i) => ({
+  return ["2020", "2021", "2022", "2023", "2024", "2025", "2026"].map((y, i) => ({
     year: y,
     Mumbai: +(base[ds] + Math.random() * 80 + i * 15).toFixed(1),
     Delhi: +(base[ds] + Math.random() * 80 + i * 12).toFixed(1),
@@ -296,8 +297,9 @@ const INITIAL_DATASETS = [
 ];
 
 /* ─── SVG ICON HELPER ───────────────────────────────────────────────────── */
-const I = ({ d, size = 18, c = "currentColor", sw = 2 }) => (
+const I = ({ d, size = 18, c = "currentColor", sw = 2, className = "" }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    className={className}
     stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
     <path d={d} />
   </svg>
@@ -338,7 +340,7 @@ function useNotif() {
 
 /* ─── FILTER PANEL ──────────────────────────────────────────────────────── */
 function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities }) {
-  const years = ["All", "2018", "2019", "2020", "2021", "2022", "2023", "2024"];
+  const years = ["All", "2020", "2021", "2022", "2023", "2024", "2025", "2026"];
   const regions = ["All India", "North", "South", "East", "West", "Central", "Northeast"];
   const categories = DATASETS.map((d, i) => ({ key: d.key, label: d.label, color: COLORS[i] }));
 
@@ -457,10 +459,10 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
     setIsAiLoading(true);
     showNotif("AI is generating real-time data...");
 
-    const prompt = `Generate realistic statistical data for the "${ds}" dataset in India for the years 2018-2024. 
+    const prompt = `Generate realistic statistical data for the "${ds}" dataset in India for the years 2020-2026. 
     Cities: Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Pune.
     Include:
-    1. "yearData": Array of 7 objects (years 2018-2024). Each object must have 'year' (string) and values for all cities.
+    1. "yearData": Array of 7 objects (years 2020-2026). Each object must have 'year' (string) and values for all cities.
     2. "pieData": A breakdown relevant to ${ds} (at least 4 segments with 'name' and 'value').
     3. "barData": Array of objects for each city with 'city', 'value', and 'target'.
     
@@ -468,7 +470,7 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
 
     try {
       // Inline fetch to avoid import issues in this large file
-      const API_KEY = "AIzaSyA6dcTfEx39HFdhO8yvej_0N9ie8Uwkxzs";
+      const API_KEY = "AIzaSyBeGrH6JwY82BZvPRW_vuhfD_f_JGJOqqA";
       const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
       const response = await fetch(`${API_URL}?key=${API_KEY}`, {
@@ -505,6 +507,68 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
     { label: "Downloads", val: "18.2K", change: "+22%", dir: "up", color: "coral", icon: "⬇" },
   ];
 
+  const downloadCSV = () => {
+    if (!yearData || yearData.length === 0) {
+      showNotif("No data to export");
+      return;
+    }
+
+    // 1. Define headers
+    const headers = ["Year", ...CITIES.map(c => c.name), "Average"];
+
+    // 2. Map data rows
+    const rows = yearData.map(row => {
+      const cityVals = CITIES.map(c => row[c.name]);
+      const avg = (cityVals.reduce((a, b) => a + b, 0) / cityVals.length).toFixed(1);
+      return [row.year, ...cityVals, avg].join(",");
+    });
+
+    // 3. Combine headers and rows
+    const csvContent = [headers.join(","), ...rows].join("\n");
+
+    // 4. Create blob and download link
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${ds}_data_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showNotif("CSV downloaded successfully! ✓");
+  };
+
+  const downloadPDF = () => {
+    const reportTitle = `${ds.toUpperCase()} DATA REPORT`;
+    const date = new Date().toLocaleString();
+
+    let content = `%PDF-1.4\n`;
+    content += `1 0 obj << /Title (${reportTitle}) /Author (DataPortal) >> endobj\n`;
+    content += `[REPORT SUMMARY]\n`;
+    content += `Dataset: ${ds}\n`;
+    content += `Generated on: ${date}\n\n`;
+    content += `[DATA TABLE]\n`;
+    content += `Year | ` + CITIES.map(c => c.name).join(" | ") + " | Average\n";
+    content += `-`.repeat(80) + "\n";
+
+    yearData.forEach(row => {
+      const cityVals = CITIES.map(c => row[c.name]);
+      const avg = (cityVals.reduce((a, b) => a + b, 0) / cityVals.length).toFixed(1);
+      content += `${row.year} | ${cityVals.join(" | ")} | ${avg}\n`;
+    });
+
+    const blob = new Blob([content], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${ds}_report_${new Date().getTime()}.pdf`);
+    link.click();
+
+    showNotif("PDF Report generated successfully! ✓");
+  };
+
   return (
     <div style={{ flex: 1, overflowY: "auto" }}>
       {/* HERO */}
@@ -515,13 +579,8 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
         <h1>India <span style={{ color: "rgba(255,255,255,0.8)" }}>AI</span> Data Engine</h1>
         <p>Explore, analyze, and download India's most comprehensive public datasets through interactive visualizations and powerful filters.</p>
         <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
-          <button className="btn btn-primary" onClick={refreshWithAI} disabled={isAiLoading}>
-            <I d={ic.refresh} size={16} className={isAiLoading ? "spin" : ""} />
-            {isAiLoading ? "Synthesizing AI Data..." : "Refresh with Gemini AI"}
-          </button>
-          <button className="btn btn-outline" style={{ color: "#fff", borderColor: "#ffffff66" }}>
-            <I d={ic.dl} size={16} /> Download CSV
-          </button>
+
+
         </div>
         <div className="hero-stats">
           {[["2.4M+", "Records"], ["48", "Datasets"], ["128", "Cities"], ["99.9%", "Uptime"]].map(([v, l]) => (
@@ -570,17 +629,19 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
               <div className="card-sub">Year-over-year comparison across selected cities</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-outline btn-sm" onClick={() => showNotif("Chart refreshed ✓")}>
-                <I d={ic.refresh} size={13} />
+              <button className={`btn btn-outline btn-sm ${isAiLoading ? 'pulse' : ''}`}
+                onClick={refreshWithAI}
+                disabled={isAiLoading}>
+                <I d={ic.refresh} size={13} className={isAiLoading ? "spin" : ""} />
               </button>
-              <button className="btn btn-outline btn-sm" onClick={() => showNotif("Chart exported ✓")}>
+              <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
                 <I d={ic.dl} size={13} />
               </button>
             </div>
           </div>
 
           <div className="chart-tabs">
-            {[["line", "📈 Line"], ["bar", "📊 Bar"], ["area", "📉 Area"]].map(([k, l]) => (
+            {[["line", "📈"], ["bar", "📊"], ["area", "📉"]].map(([k, l]) => (
               <div key={k} className={`ct-tab${chartTab === k ? " active" : ""}`} onClick={() => setChartTab(k)}>{l}</div>
             ))}
           </div>
@@ -682,9 +743,14 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
               <div className="card-title">📋 Data Table</div>
               <div className="card-sub">Yearly values for all cities</div>
             </div>
-            <button className="btn btn-emerald btn-sm" onClick={() => showNotif("CSV downloaded ✓")}>
-              <I d={ic.dl} size={13} /> Export CSV
-            </button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-coral btn-sm" onClick={downloadPDF}>
+                <I d={ic.pdf} size={13} /> Export PDF
+              </button>
+              <button className="btn btn-emerald btn-sm" onClick={downloadCSV}>
+                <I d={ic.dl} size={13} /> Export CSV
+              </button>
+            </div>
           </div>
           <div className="table-wrap">
             <table>
@@ -724,6 +790,37 @@ function ChartsExplorer({ showNotif }) {
   const barData = makeBarData();
   const radarData = CITIES.map(c => ({ city: c.name, score: +(40 + Math.random() * 60).toFixed(0) }));
 
+  const downloadCSV = () => {
+    let headers = [];
+    let rows = [];
+    let filename = `export_${active}_${new Date().toISOString().split('T')[0]}.csv`;
+
+    if (active === "line") {
+      headers = ["Year", ...CITIES.map(c => c.name)];
+      rows = yearData.map(row => [row.year, ...CITIES.map(c => row[c.name])].join(","));
+    } else if (active === "bar") {
+      headers = ["City", "Value", "Target"];
+      rows = barData.map(row => [row.city, row.value, row.target].join(","));
+    } else if (active === "pie") {
+      headers = ["Name", "Value"];
+      rows = pieData.map(row => [row.name, row.value].join(","));
+    } else if (active === "radar") {
+      headers = ["City", "Score"];
+      rows = radarData.map(row => [row.city, row.score].join(","));
+    }
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showNotif(`${active.toUpperCase()} data exported ✓`);
+  };
+
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
       <div className="fade-up" style={{ marginBottom: 24 }}>
@@ -748,7 +845,7 @@ function ChartsExplorer({ showNotif }) {
                   : active === "pie" ? "🥧 Pie Chart — Education Distribution"
                     : "🕸 Radar Chart — City Performance Score"}
             </div>
-            <button className="btn btn-outline btn-sm" onClick={() => showNotif("Chart exported as PNG ✓")}>
+            <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
               <I d={ic.dl} size={13} /> Export
             </button>
           </div>
@@ -801,7 +898,7 @@ function ChartsExplorer({ showNotif }) {
       <div className="fade-up-3" style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 15, marginBottom: 14 }}>📊 Chart Gallery</div>
       <div className="charts-row two fade-up-4">
         {[
-          { title: "Population Growth", sub: "2018–2024 trend", data: yearData, type: "area" },
+          { title: "Population Growth", sub: "2020–2026 trend", data: yearData, type: "area" },
           { title: "City Distribution", sub: "Population share", data: pieData, type: "pie" },
         ].map(({ title, sub, data, type }, idx) => (
           <div key={idx} className="card">
@@ -859,7 +956,52 @@ function DownloadReports({ showNotif }) {
 
   const handleDl = (id, title, fmt) => {
     setLoading(id);
+
     setTimeout(() => {
+      // 1. Generate sample data based on format
+      let content = "";
+      let type = "";
+      let ext = fmt.toLowerCase();
+
+      if (fmt === "CSV") {
+        const report = reports.find(r => r.id === id);
+        content = `Report Title,Category,Rows,Size,Date\n${title},${report.category},${report.rows},${report.size},${new Date().toLocaleDateString()}\n`;
+        // Add some dummy data rows
+        for (let i = 1; i <= 5; i++) {
+          content += `Record ${i},Data ${Math.random().toFixed(2)},Sample Value,Active,2024-01-01\n`;
+        }
+        type = "text/csv;charset=utf-8;";
+      } else {
+        // Structured PDF Simulation
+        const date = new Date().toLocaleString();
+        content = `%PDF-1.4\n1 0 obj\n<< /Title (${title}) /Author (DataPortal) /Subject (Public Data Report) /CreationDate (D:${new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)}) >>\nendobj\n\n`;
+        content += `==================================================\n`;
+        content += `            OFFICIAL DATAPORTAL REPORT            \n`;
+        content += `==================================================\n\n`;
+        content += `REPORT TITLE: ${title}\n`;
+        content += `CATEGORY:     ${reports.find(r => r.id === id).category}\n`;
+        content += `EXTRACTED ON: ${date}\n\n`;
+        content += `--------------------------------------------------\n`;
+        content += `[DATA PREVIEW]\n`;
+        content += `Row | Attribute | Value\n`;
+        for (let i = 1; i <= 10; i++) {
+          content += `${String(i).padStart(3, ' ')} | Sample ID | ${Math.random().toString(36).substring(7).toUpperCase()}\n`;
+        }
+        content += `--------------------------------------------------\n\n`;
+        content += `[END OF REPORT]`;
+        type = "application/pdf";
+      }
+
+      // 2. Trigger Download
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `${title.replace(/\s+/g, '_')}_${new Date().getTime()}.${ext}`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       setLoading(null);
       showNotif(`${title} downloaded as ${fmt} ✓`);
     }, 1200);
@@ -874,7 +1016,14 @@ function DownloadReports({ showNotif }) {
         </div>
         {selected.length > 0 && (
           <button className="btn btn-primary"
-            onClick={() => { showNotif(`${selected.length} files downloaded ✓`); setSelected([]); }}>
+            onClick={() => {
+              selected.forEach(id => {
+                const report = reports.find(r => r.id === id);
+                if (report) handleDl(id, report.title, "CSV");
+              });
+              showNotif(`${selected.length} reports in queue ✓`);
+              setSelected([]);
+            }}>
             <I d={ic.dl} size={15} /> Download Selected ({selected.length})
           </button>
         )}
@@ -1175,8 +1324,8 @@ function Chartbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const API_KEY = "AIzaSyA6dcTfEx39HFdhO8yvej_0N9ie8Uwkxzs";
-  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+  const API_KEY = "AIzaSyCxx6tlvJ6P3mHSqTjBoJTVOshfcWhBjjA";
+  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -1208,31 +1357,48 @@ function Chartbot() {
   };
 
   const sendMessage = async () => {
-    const message = input.trim();
-    if (!message) return;
+    const text = input.trim();
+    if (!text || loading) return;
 
-    const userMsg = { role: 'user', content: message };
-    setMessages(prev => [...prev, userMsg]);
+    const userMsg = { role: "user", content: text };
+    const currentMessages = [...messages, userMsg];
+    setMessages(currentMessages);
     setInput("");
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: message }] }]
-        })
+      // Role mapping and consolidation for Gemini
+      const historyItems = currentMessages
+        .filter(m => m.role && m.content && !m.isError)
+        .map(m => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }]
+        }));
+
+      const finalHistory = [];
+      historyItems.forEach(item => {
+        if (finalHistory.length > 0 && finalHistory[finalHistory.length - 1].role === item.role) {
+          finalHistory[finalHistory.length - 1].parts[0].text += "\n" + item.parts[0].text;
+        } else {
+          finalHistory.push(item);
+        }
       });
 
-      if (!response.ok) throw new Error('API request failed');
+      console.log("Sending to AI...", finalHistory);
 
-      const data = await response.json();
-      const aiMessage = data.candidates[0].content.parts[0].text;
-      setMessages(prev => [...prev, { role: 'assistant', content: aiMessage }]);
-    } catch (error) {
-      console.error('Error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${error.message}`, isError: true }]);
+      const res = await axios.post(`${API_URL}?key=${API_KEY}`,
+        { contents: finalHistory },
+        { timeout: 30000 }
+      );
+
+      const aiText = res.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!aiText) throw new Error("Empty response from AI (possibly blocked)");
+
+      setMessages(prev => [...prev, { role: "assistant", content: aiText }]);
+    } catch (err) {
+      console.error("Gemini Details:", err.response?.data || err.message);
+      const msg = err.response?.data?.error?.message || err.message;
+      setMessages(prev => [...prev, { role: "assistant", content: `API Error: ${msg}`, isError: true }]);
     } finally {
       setLoading(false);
     }
@@ -1277,7 +1443,7 @@ function Chartbot() {
         <div style={{ padding: '16px 28px', background: 'var(--card)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: '18px' }}>AI Assistant</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Powered by Gemini 2.5 Flash</div>
+            <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Powered by Gemini 1.5 Flash</div>
           </div>
         </div>
 
@@ -1295,7 +1461,7 @@ function Chartbot() {
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: msg.role === 'user' ? 'var(--teal)' : 'var(--violet)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0, boxShadow: '0 2px 8px #0001' }}>
                 {msg.role === 'user' ? '👤' : '🤖'}
               </div>
-              <div style={{ maxWidth: '70%', padding: '14px 18px', borderRadius: '16px', fontSize: '14px', lineHeight: 1.6, background: msg.role === 'user' ? 'linear-gradient(135deg, var(--teal), var(--violet))' : 'var(--card)', color: msg.role === 'user' ? '#fff' : 'var(--text)', border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none', boxShadow: '0 2px 12px #00000008', borderTopRightRadius: msg.role === 'user' ? '4px' : '16px', borderTopLeftRadius: msg.role === 'assistant' ? '4px' : '16px', backgroundColor: msg.isError ? '#fee' : undefined, color: msg.isError ? '#c33' : undefined }}>
+              <div style={{ maxWidth: '70%', padding: '14px 18px', borderRadius: '16px', fontSize: '14px', lineHeight: 1.6, background: msg.role === 'user' ? 'linear-gradient(135deg, var(--teal), var(--violet))' : 'var(--card)', color: msg.isError ? '#c33' : (msg.role === 'user' ? '#fff' : 'var(--text)'), border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none', boxShadow: '0 2px 12px #00000008', borderTopRightRadius: msg.role === 'user' ? '4px' : '16px', borderTopLeftRadius: msg.role === 'assistant' ? '4px' : '16px', backgroundColor: msg.isError ? '#fee' : undefined }}>
                 <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
               </div>
             </div>
@@ -1333,9 +1499,17 @@ export default function App() {
   const [collapsed, setCollapsed] = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [notif, showNotif] = useNotif();
+  const [user, setUser] = useState({ name: "Admin User", email: "admin@dataportal.gov" });
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   const [filters, setFilters] = useState({
-    yearFrom: "2018", yearTo: "2024",
+    yearFrom: "2020", yearTo: "2026",
     region: "All India",
     categories: ["population", "gdp", "health", "education", "environment"],
   });
@@ -1390,7 +1564,7 @@ export default function App() {
                 <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4, lineHeight: 1.5 }}>  </div>
                 <div style={{ marginTop: 8, display: "flex", gap: 4 }}>
                   <span className="badge badge-teal" style={{ fontSize: 10 }}></span>
-                  <span className="badge badge-violet" style={{ fontSize: 10 }}>2024</span>
+                  <span className="badge badge-violet" style={{ fontSize: 10 }}></span>
                 </div>
               </div>
             </>
@@ -1403,8 +1577,8 @@ export default function App() {
             </div>
             {!collapsed && (
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>Admin User</div>
-                <div style={{ fontSize: 11, color: "var(--muted)" }}>admin@dataportal.gov</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</div>
+                <div style={{ fontSize: 11, color: "var(--muted)" }}>{user.email}</div>
               </div>
             )}
           </div>
@@ -1440,7 +1614,7 @@ export default function App() {
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg,var(--teal),var(--violet))", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <I d={ic.user} size={14} c="#fff" />
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>Admin</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</div>
               </div>
             </div>
           </div>
