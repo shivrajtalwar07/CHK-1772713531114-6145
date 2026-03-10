@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   AreaChart, Area, RadarChart, Radar, PolarGrid, PolarAngleAxis,
@@ -228,34 +227,34 @@ const CSS = `
 `;
 
 /* ─── CONSTANTS ─────────────────────────────────────────────────────────── */
-const COLORS = ["#0ea5e9", "#8b5cf6", "#f43f5e", "#f59e0b", "#10b981", "#ec4899", "#06b6d4", "#84cc16"];
+const COLORS = ["#0ea5e9","#8b5cf6","#f43f5e","#f59e0b","#10b981","#ec4899","#06b6d4","#84cc16"];
 
 const CITIES = [
-  { name: "Mumbai", color: "#0ea5e9" },
-  { name: "Delhi", color: "#8b5cf6" },
-  { name: "Bangalore", color: "#10b981" },
-  { name: "Chennai", color: "#f43f5e" },
-  { name: "Hyderabad", color: "#f59e0b" },
-  { name: "Pune", color: "#ec4899" },
+  {name:"Mumbai",    color:"#0ea5e9"},
+  {name:"Delhi",     color:"#8b5cf6"},
+  {name:"Bangalore", color:"#10b981"},
+  {name:"Chennai",   color:"#f43f5e"},
+  {name:"Hyderabad", color:"#f59e0b"},
+  {name:"Pune",      color:"#ec4899"},
 ];
 
 const DATASETS = [
-  { key: "population", label: "👥 Population", icon: "👥" },
-  { key: "gdp", label: "💰 GDP", icon: "💰" },
-  { key: "health", label: "🏥 Healthcare", icon: "🏥" },
-  { key: "education", label: "🎓 Education", icon: "🎓" },
-  { key: "environment", label: "🌿 Environment", icon: "🌿" },
+  {key:"population", label:"👥 Population", icon:"👥"},
+  {key:"gdp",        label:"💰 GDP",         icon:"💰"},
+  {key:"health",     label:"🏥 Healthcare",  icon:"🏥"},
+  {key:"education",  label:"🎓 Education",   icon:"🎓"},
+  {key:"environment",label:"🌿 Environment", icon:"🌿"},
 ];
 
 const TS = {
-  contentStyle: { background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, fontFamily: "DM Sans", fontSize: 12 },
-  labelStyle: { color: "#64748b", fontWeight: 600 },
+  contentStyle:{background:"#fff",border:"1px solid #e2e8f0",borderRadius:10,fontFamily:"DM Sans",fontSize:12},
+  labelStyle:{color:"#64748b",fontWeight:600},
 };
 
 /* ─── DATA GENERATORS ───────────────────────────────────────────────────── */
 function makeYearData(ds) {
   const base = { population: 820, gdp: 420, health: 310, education: 550, environment: 200 };
-  return ["2020", "2021", "2022", "2023", "2024", "2025", "2026"].map((y, i) => ({
+  return ["2018", "2019", "2020", "2021", "2022", "2023", "2024"].map((y, i) => ({
     year: y,
     Mumbai: +(base[ds] + Math.random() * 80 + i * 15).toFixed(1),
     Delhi: +(base[ds] + Math.random() * 80 + i * 12).toFixed(1),
@@ -268,67 +267,67 @@ function makeYearData(ds) {
 
 function makePieData(ds) {
   const labels = {
-    population: ["Urban", "Rural", "Suburban", "Tribal"],
-    gdp: ["Services", "Manufacturing", "Agriculture", "Construction"],
-    health: ["Hospitals", "Clinics", "PHC", "Others"],
-    education: ["Primary", "Secondary", "Higher", "Vocational"],
-    environment: ["Forest", "Wetland", "Agricultural", "Urban"],
+    population: ["Urban","Rural","Suburban","Tribal"],
+    gdp:        ["Services","Manufacturing","Agriculture","Construction"],
+    health:     ["Hospitals","Clinics","PHC","Others"],
+    education:  ["Primary","Secondary","Higher","Vocational"],
+    environment:["Forest","Wetland","Agricultural","Urban"],
   };
-  const vals = [40, 28, 20, 12];
-  return (labels[ds] || labels.population).map((n, i) => ({
-    name: n, value: vals[i] + Math.floor(Math.random() * 10 - 5)
+  const vals = [40,28,20,12];
+  return (labels[ds]||labels.population).map((n,i)=>({
+    name:n, value: vals[i]+Math.floor(Math.random()*10-5)
   }));
 }
 
 function makeBarData() {
-  return CITIES.map(c => ({
-    city: c.name,
-    value: +(200 + Math.random() * 600).toFixed(0),
-    target: +(300 + Math.random() * 400).toFixed(0),
+  return CITIES.map(c=>({
+    city:c.name,
+    value:  +(200+Math.random()*600).toFixed(0),
+    target: +(300+Math.random()*400).toFixed(0),
   }));
 }
 
 const INITIAL_DATASETS = [
-  { id: 1, name: "Census 2024 - Urban Areas", category: "Population", size: "2.4 MB", rows: 14200, status: "Active", date: "2024-03-01" },
-  { id: 2, name: "GDP Q4 2023 Report", category: "Economics", size: "1.1 MB", rows: 8400, status: "Active", date: "2024-02-20" },
-  { id: 3, name: "Healthcare Infrastructure", category: "Health", size: "3.8 MB", rows: 22100, status: "Processing", date: "2024-03-05" },
-  { id: 4, name: "Literacy Rate Survey", category: "Education", size: "0.9 MB", rows: 5600, status: "Active", date: "2024-02-15" },
-  { id: 5, name: "Air Quality Index 2023", category: "Environment", size: "4.2 MB", rows: 31500, status: "Active", date: "2024-03-08" },
+  {id:1,name:"Census 2024 - Urban Areas",   category:"Population", size:"2.4 MB",rows:14200, status:"Active",     date:"2024-03-01"},
+  {id:2,name:"GDP Q4 2023 Report",          category:"Economics",  size:"1.1 MB",rows:8400,  status:"Active",     date:"2024-02-20"},
+  {id:3,name:"Healthcare Infrastructure",  category:"Health",     size:"3.8 MB",rows:22100, status:"Processing", date:"2024-03-05"},
+  {id:4,name:"Literacy Rate Survey",        category:"Education",  size:"0.9 MB",rows:5600,  status:"Active",     date:"2024-02-15"},
+  {id:5,name:"Air Quality Index 2023",      category:"Environment",size:"4.2 MB",rows:31500, status:"Active",     date:"2024-03-08"},
 ];
 
 /* ─── SVG ICON HELPER ───────────────────────────────────────────────────── */
-const I = ({ d, size = 18, c = "currentColor", sw = 2, className = "" }) => (
+const I = ({ d, size = 18, c = "currentColor", sw = 2 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
     className={className}
     stroke={c} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
-    <path d={d} />
+    <path d={d}/>
   </svg>
 );
 
 const ic = {
-  home: "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",
-  chart: "M18 20V10M12 20V4M6 20v-6",
-  pie: "M21.21 15.89A10 10 0 118 2.83M22 12A10 10 0 0012 2v10z",
-  table: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-  dl: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3",
-  admin: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
-  filter: "M22 3H2l8 9.46V19l4 2V12.46L22 3z",
-  upload: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12",
-  check: "M20 6L9 17l-5-5",
-  x: "M18 6L6 18M6 6l12 12",
-  menu: "M3 12h18M3 6h18M3 18h18",
-  refresh: "M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15",
-  search: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0",
-  bell: "M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0",
-  user: "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z",
+  home:     "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",
+  chart:    "M18 20V10M12 20V4M6 20v-6",
+  pie:      "M21.21 15.89A10 10 0 118 2.83M22 12A10 10 0 0012 2v10z",
+  table:    "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
+  dl:       "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3",
+  admin:    "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+  filter:   "M22 3H2l8 9.46V19l4 2V12.46L22 3z",
+  upload:   "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12",
+  check:    "M20 6L9 17l-5-5",
+  x:        "M18 6L6 18M6 6l12 12",
+  menu:     "M3 12h18M3 6h18M3 18h18",
+  refresh:  "M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15",
+  search:   "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0",
+  bell:     "M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0",
+  user:     "M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z",
   settings: "M12 20a8 8 0 100-16 8 8 0 000 16zM12 14a2 2 0 100-4 2 2 0 000 4z",
-  csv: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z",
-  pdf: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6",
-  eye: "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6z",
-  trash: "M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6",
-  plus: "M12 5v14M5 12h14",
-  globe: "M12 22a10 10 0 100-20 10 10 0 000 20zM2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20",
-  lightning: "M13 2L3 14h9l-1 8 10-12h-9l1-8z",
+  csv:      "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z",
+  pdf:      "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6",
+  eye:      "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6z",
+  trash:    "M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6",
+  plus:     "M12 5v14M5 12h14",
+  globe:    "M12 22a10 10 0 100-20 10 10 0 000 20zM2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20",
+  lightning:"M13 2L3 14h9l-1 8 10-12h-9l1-8z",
 };
 
 /* ─── NOTIFICATION HOOK ─────────────────────────────────────────────────── */
@@ -340,7 +339,7 @@ function useNotif() {
 
 /* ─── FILTER PANEL ──────────────────────────────────────────────────────── */
 function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities }) {
-  const years = ["All", "2020", "2021", "2022", "2023", "2024", "2025", "2026"];
+  const years = ["All", "2018", "2019", "2020", "2021", "2022", "2023", "2024"];
   const regions = ["All India", "North", "South", "East", "West", "Central", "Northeast"];
   const categories = DATASETS.map((d, i) => ({ key: d.key, label: d.label, color: COLORS[i] }));
 
@@ -355,34 +354,34 @@ function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities })
 
   return (
     <div className="filter-panel">
-      <div className="filter-title" style={{ fontSize: 15 }}>
-        <I d={ic.filter} size={16} c="#0ea5e9" /> Filters &amp; Controls
+      <div className="filter-title" style={{fontSize:15}}>
+        <I d={ic.filter} size={16} c="#0ea5e9"/> Filters &amp; Controls
       </div>
 
       {/* YEAR */}
       <div className="filter-group">
         <div className="filter-label">📅 Year Range</div>
         <div className="range-row">
-          <select value={filters.yearFrom} onChange={e => setFilters(f => ({ ...f, yearFrom: e.target.value }))}>
-            {years.map(y => <option key={y}>{y}</option>)}
+          <select value={filters.yearFrom} onChange={e=>setFilters(f=>({...f,yearFrom:e.target.value}))}>
+            {years.map(y=><option key={y}>{y}</option>)}
           </select>
-          <select value={filters.yearTo} onChange={e => setFilters(f => ({ ...f, yearTo: e.target.value }))}>
-            {years.map(y => <option key={y}>{y}</option>)}
+          <select value={filters.yearTo} onChange={e=>setFilters(f=>({...f,yearTo:e.target.value}))}>
+            {years.map(y=><option key={y}>{y}</option>)}
           </select>
         </div>
       </div>
 
-      <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
+      <div style={{height:1,background:"var(--border)",margin:"4px 0"}}/>
 
       {/* REGION */}
       <div className="filter-group">
         <div className="filter-label">🗺 Region</div>
-        <select value={filters.region} onChange={e => setFilters(f => ({ ...f, region: e.target.value }))}>
-          {regions.map(r => <option key={r}>{r}</option>)}
+        <select value={filters.region} onChange={e=>setFilters(f=>({...f,region:e.target.value}))}>
+          {regions.map(r=><option key={r}>{r}</option>)}
         </select>
       </div>
 
-      <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
+      <div style={{height:1,background:"var(--border)",margin:"4px 0"}}/>
 
       {/* CATEGORY */}
       <div className="filter-group">
@@ -390,9 +389,9 @@ function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities })
         <div className="checkbox-group">
           {categories.map(c => (
             <div key={c.key} className="cb-item" onClick={() => toggleCat(c.key)}>
-              <div className={`cb-box${filters.categories.includes(c.key) ? " checked" : ""}`}>
+              <div className={`cb-box${filters.categories.includes(c.key)?" checked":""}`}>
                 {filters.categories.includes(c.key) &&
-                  <I d={ic.check} size={10} c="#fff" sw={3} />}
+                  <I d={ic.check} size={10} c="#fff" sw={3}/>}
               </div>
               <span>{c.label}</span>
             </div>
@@ -400,7 +399,7 @@ function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities })
         </div>
       </div>
 
-      <div style={{ height: 1, background: "var(--border)", margin: "4px 0" }} />
+      <div style={{height:1,background:"var(--border)",margin:"4px 0"}}/>
 
       {/* CITIES */}
       <div className="filter-group">
@@ -410,16 +409,16 @@ function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities })
             const sel = selectedCities.includes(c.name);
             return (
               <div key={c.name}
-                className={`city-chip${sel ? " sel" : ""}`}
+                className={`city-chip${sel?" sel":""}`}
                 style={{
-                  background: sel ? c.color + "22" : "var(--bg)",
-                  border: `2px solid ${sel ? c.color : "var(--border)"}`,
+                  background: sel ? c.color+"22" : "var(--bg)",
+                  border:`2px solid ${sel ? c.color : "var(--border)"}`,
                   color: sel ? c.color : "var(--muted)",
                 }}
                 onClick={() => setSelectedCities(prev =>
-                  sel ? prev.filter(x => x !== c.name) : [...prev, c.name]
+                  sel ? prev.filter(x=>x!==c.name) : [...prev, c.name]
                 )}>
-                <div className="color-dot" style={{ background: c.color }} />
+                <div className="color-dot" style={{background:c.color}}/>
                 {c.name}
               </div>
             );
@@ -427,19 +426,19 @@ function FilterPanel({ filters, setFilters, selectedCities, setSelectedCities })
         </div>
       </div>
 
-      <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-        <I d={ic.filter} size={14} /> Apply Filters
+      <button className="btn btn-primary" style={{width:"100%",justifyContent:"center"}}>
+        <I d={ic.filter} size={14}/> Apply Filters
       </button>
-      <button className="btn btn-outline" style={{ width: "100%", justifyContent: "center", marginTop: 8 }}>
-        <I d={ic.refresh} size={14} /> Reset
+      <button className="btn btn-outline" style={{width:"100%",justifyContent:"center",marginTop:8}}>
+        <I d={ic.refresh} size={14}/> Reset
       </button>
     </div>
   );
 }
 
 /* ─── CITIZEN DASHBOARD ─────────────────────────────────────────────────── */
-function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCities, showNotif }) {
-  const [ds, setDs] = useState("population");
+function CitizenDashboard({filters, setFilters, selectedCities, setSelectedCities, showNotif}) {
+  const [ds,       setDs]       = useState("population");
   const [chartTab, setChartTab] = useState("line");
   const [yearData, setYearData] = useState([]);
   const [pieData, setPieData] = useState([]);
@@ -459,10 +458,10 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
     setIsAiLoading(true);
     showNotif("AI is generating real-time data...");
 
-    const prompt = `Generate realistic statistical data for the "${ds}" dataset in India for the years 2020-2026. 
+    const prompt = `Generate realistic statistical data for the "${ds}" dataset in India for the years 2018-2024. 
     Cities: Mumbai, Delhi, Bangalore, Chennai, Hyderabad, Pune.
     Include:
-    1. "yearData": Array of 7 objects (years 2020-2026). Each object must have 'year' (string) and values for all cities.
+    1. "yearData": Array of 7 objects (years 2018-2024). Each object must have 'year' (string) and values for all cities.
     2. "pieData": A breakdown relevant to ${ds} (at least 4 segments with 'name' and 'value').
     3. "barData": Array of objects for each city with 'city', 'value', and 'target'.
     
@@ -470,7 +469,7 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
 
     try {
       // Inline fetch to avoid import issues in this large file
-      const API_KEY = "AIzaSyBeGrH6JwY82BZvPRW_vuhfD_f_JGJOqqA";
+      const API_KEY = "AIzaSyA6dcTfEx39HFdhO8yvej_0N9ie8Uwkxzs";
       const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
       const response = await fetch(`${API_URL}?key=${API_KEY}`, {
@@ -500,11 +499,11 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
   };
 
   const stats = [
-    { label: "Total Records", val: "2.4M", change: "+12%", dir: "up", color: "teal", icon: "📊" },
-    { label: "Datasets", val: "48", change: "+5", dir: "up", color: "violet", icon: "🗂" },
-    { label: "Cities Covered", val: "128", change: "+8", dir: "up", color: "emerald", icon: "🏙" },
-    { label: "Last Updated", val: "Today", change: "Live", dir: "up", color: "amber", icon: "🔄" },
-    { label: "Downloads", val: "18.2K", change: "+22%", dir: "up", color: "coral", icon: "⬇" },
+    {label:"Total Records", val:"2.4M",  change:"+12%", dir:"up", color:"teal",    icon:"📊"},
+    {label:"Datasets",      val:"48",    change:"+5",   dir:"up", color:"violet",  icon:"🗂"},
+    {label:"Cities Covered",val:"128",   change:"+8",   dir:"up", color:"emerald", icon:"🏙"},
+    {label:"Last Updated",  val:"Today", change:"Live", dir:"up", color:"amber",   icon:"🔄"},
+    {label:"Downloads",     val:"18.2K", change:"+22%", dir:"up", color:"coral",   icon:"⬇"},
   ];
 
   const downloadCSV = () => {
@@ -570,20 +569,25 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
   };
 
   return (
-    <div style={{ flex: 1, overflowY: "auto" }}>
+    <div style={{flex:1, overflowY:"auto"}}>
       {/* HERO */}
       <div className="hero fade-up">
         <div className="hero-tag">
-          <span className="live-dot" />Live Portal
+          <span className="live-dot"/> CHAKRAVYUH 2.0 — Live Portal
         </div>
-        <h1>India <span style={{ color: "rgba(255,255,255,0.8)" }}>AI</span> Data Engine</h1>
+        <h1>Public Data Visualization<br/>& Open Information Portal</h1>
         <p>Explore, analyze, and download India's most comprehensive public datasets through interactive visualizations and powerful filters.</p>
         <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
-
-
+          <button className="btn btn-primary" onClick={refreshWithAI} disabled={isAiLoading}>
+            <I d={ic.refresh} size={16} className={isAiLoading ? "spin" : ""} />
+            {isAiLoading ? "Synthesizing AI Data..." : "Refresh with Gemini AI"}
+          </button>
+          <button className="btn btn-outline" style={{ color: "#fff", borderColor: "#ffffff66" }}>
+            <I d={ic.dl} size={16} /> Download CSV
+          </button>
         </div>
         <div className="hero-stats">
-          {[["2.4M+", "Records"], ["48", "Datasets"], ["128", "Cities"], ["99.9%", "Uptime"]].map(([v, l]) => (
+          {[["2.4M+","Records"],["48","Datasets"],["128","Cities"],["99.9%","Uptime"]].map(([v,l])=>(
             <div className="hero-stat" key={l}>
               <div className="val">{v}</div>
               <div className="lbl">{l}</div>
@@ -594,26 +598,26 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
 
       {/* KPI */}
       <div className="stat-grid fade-up-1">
-        {stats.map(s => (
+        {stats.map(s=>(
           <div key={s.label} className={`stat-card ${s.color}`}>
             <div className="stat-label"><span>{s.icon}</span>{s.label}</div>
             <div className={`stat-val ${s.color}`}>{s.val}</div>
             <div className={`stat-change ${s.dir}`}>
-              {s.dir === "up" ? "▲" : "▼"} {s.change} vs last month
+              {s.dir==="up"?"▲":"▼"} {s.change} vs last month
             </div>
           </div>
         ))}
       </div>
 
       {/* DATASET SELECTOR */}
-      <div style={{ padding: "20px 28px 0" }}>
-        <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 14, marginBottom: 10, color: "var(--muted)", textTransform: "uppercase", letterSpacing: ".08em" }}>
+      <div style={{padding:"20px 28px 0"}}>
+        <div style={{fontFamily:"Outfit",fontWeight:700,fontSize:14,marginBottom:10,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em"}}>
           📂 Select Dataset
         </div>
         <div className="dataset-tabs fade-up-2">
-          {DATASETS.map(d => (
-            <div key={d.key} className={`ds-tab${ds === d.key ? " active" : ""}`} onClick={() => setDs(d.key)}>
-              {d.icon} {d.label.replace(/^\S+ /, "")}
+          {DATASETS.map(d=>(
+            <div key={d.key} className={`ds-tab${ds===d.key?" active":""}`} onClick={()=>setDs(d.key)}>
+              {d.icon} {d.label.replace(/^\S+ /,"")}
             </div>
           ))}
         </div>
@@ -623,75 +627,73 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
       <div className="charts-area fade-up-3">
         {/* MAIN CHART */}
         <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
-              <div className="card-title">📈 Trend Analysis — {ds.charAt(0).toUpperCase() + ds.slice(1)}</div>
+              <div className="card-title">📈 Trend Analysis — {ds.charAt(0).toUpperCase()+ds.slice(1)}</div>
               <div className="card-sub">Year-over-year comparison across selected cities</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button className={`btn btn-outline btn-sm ${isAiLoading ? 'pulse' : ''}`}
-                onClick={refreshWithAI}
-                disabled={isAiLoading}>
-                <I d={ic.refresh} size={13} className={isAiLoading ? "spin" : ""} />
+              <button className="btn btn-outline btn-sm" onClick={() => showNotif("Chart refreshed ✓")}>
+                <I d={ic.refresh} size={13} />
               </button>
-              <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
+              <button className="btn btn-outline btn-sm" onClick={() => showNotif("Chart exported ✓")}>
                 <I d={ic.dl} size={13} />
               </button>
             </div>
           </div>
 
           <div className="chart-tabs">
-            {[["line", "📈"], ["bar", "📊"], ["area", "📉"]].map(([k, l]) => (
+            {[["line", "📈 Line"], ["bar", "📊 Bar"], ["area", "📉 Area"]].map(([k, l]) => (
               <div key={k} className={`ct-tab${chartTab === k ? " active" : ""}`} onClick={() => setChartTab(k)}>{l}</div>
             ))}
           </div>
 
           <ResponsiveContainer width="100%" height={300}>
-            {chartTab === "line" ? (
+            {chartTab==="line" ? (
               <LineChart data={yearData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="year" tick={{ fontSize: 12, fontFamily: "DM Sans" }} />
-                <YAxis tick={{ fontSize: 12, fontFamily: "DM Sans" }} />
-                <Tooltip {...TS} />
-                <Legend wrapperStyle={{ fontSize: 12, fontFamily: "DM Sans" }} />
-                {activeCities.map((c, i) => (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+                <XAxis dataKey="year" tick={{fontSize:12,fontFamily:"DM Sans"}}/>
+                <YAxis tick={{fontSize:12,fontFamily:"DM Sans"}}/>
+                <Tooltip {...TS}/>
+                <Legend wrapperStyle={{fontSize:12,fontFamily:"DM Sans"}}/>
+                {activeCities.map((c,i)=>(
                   <Line key={c} type="monotone" dataKey={c}
-                    stroke={CITIES.find(x => x.name === c)?.color || COLORS[i]}
-                    strokeWidth={2.5} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    stroke={CITIES.find(x=>x.name===c)?.color||COLORS[i]}
+                    strokeWidth={2.5} dot={{r:4}} activeDot={{r:6}}/>
                 ))}
               </LineChart>
-            ) : chartTab === "bar" ? (
+            ) : chartTab==="bar" ? (
               <BarChart data={yearData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="year" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip {...TS} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                {activeCities.map((c, i) => (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+                <XAxis dataKey="year" tick={{fontSize:12}}/>
+                <YAxis tick={{fontSize:12}}/>
+                <Tooltip {...TS}/>
+                <Legend wrapperStyle={{fontSize:12}}/>
+                {activeCities.map((c,i)=>(
                   <Bar key={c} dataKey={c}
-                    fill={CITIES.find(x => x.name === c)?.color || COLORS[i]}
-                    radius={[4, 4, 0, 0]} />
+                    fill={CITIES.find(x=>x.name===c)?.color||COLORS[i]}
+                    radius={[4,4,0,0]}/>
                 ))}
               </BarChart>
             ) : (
               <AreaChart data={yearData}>
                 <defs>
-                  {activeCities.map((c, i) => (
+                  {activeCities.map((c,i)=>(
                     <linearGradient key={c} id={`ag${i}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={CITIES.find(x => x.name === c)?.color || COLORS[i]} stopOpacity={0.30} />
-                      <stop offset="100%" stopColor={CITIES.find(x => x.name === c)?.color || COLORS[i]} stopOpacity={0.02} />
+                      <stop offset="0%"   stopColor={CITIES.find(x=>x.name===c)?.color||COLORS[i]} stopOpacity={0.30}/>
+                      <stop offset="100%" stopColor={CITIES.find(x=>x.name===c)?.color||COLORS[i]} stopOpacity={0.02}/>
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="year" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip {...TS} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                {activeCities.map((c, i) => (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+                <XAxis dataKey="year" tick={{fontSize:12}}/>
+                <YAxis tick={{fontSize:12}}/>
+                <Tooltip {...TS}/>
+                <Legend wrapperStyle={{fontSize:12}}/>
+                {activeCities.map((c,i)=>(
                   <Area key={c} type="monotone" dataKey={c}
-                    stroke={CITIES.find(x => x.name === c)?.color || COLORS[i]}
-                    fill={`url(#ag${i})`} strokeWidth={2} />
+                    stroke={CITIES.find(x=>x.name===c)?.color||COLORS[i]}
+                    fill={`url(#ag${i})`} strokeWidth={2}/>
                 ))}
               </AreaChart>
             )}
@@ -701,18 +703,18 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
         {/* PIE + BAR */}
         <div className="charts-row two">
           <div className="card">
-            <div className="card-title">🥧 Distribution — {ds.charAt(0).toUpperCase() + ds.slice(1)}</div>
+            <div className="card-title">🥧 Distribution — {ds.charAt(0).toUpperCase()+ds.slice(1)}</div>
             <div className="card-sub">Proportional breakdown by segment</div>
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie data={pieData} cx="50%" cy="50%"
                   innerRadius={60} outerRadius={100} paddingAngle={4} dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({name,percent})=>`${name} ${(percent*100).toFixed(0)}%`}
                   labelLine={false}>
-                  {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  {pieData.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
                 </Pie>
-                <Tooltip {...TS} formatter={v => [`${v}%`, "Share"]} />
-                <Legend iconType="circle" iconSize={9} wrapperStyle={{ fontSize: 12 }} />
+                <Tooltip {...TS} formatter={v=>[`${v}%`,"Share"]}/>
+                <Legend iconType="circle" iconSize={9} wrapperStyle={{fontSize:12}}/>
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -722,15 +724,15 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
             <div className="card-sub">Actual vs Target across cities</div>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={barData} layout="vertical" barCategoryGap="30%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis type="number" tick={{ fontSize: 11 }} />
-                <YAxis dataKey="city" type="category" tick={{ fontSize: 11 }} width={75} />
-                <Tooltip {...TS} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="value" name="Actual" radius={[0, 4, 4, 0]}>
-                  {barData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+                <XAxis type="number" tick={{fontSize:11}}/>
+                <YAxis dataKey="city" type="category" tick={{fontSize:11}} width={75}/>
+                <Tooltip {...TS}/>
+                <Legend wrapperStyle={{fontSize:11}}/>
+                <Bar dataKey="value" name="Actual" radius={[0,4,4,0]}>
+                  {barData.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
                 </Bar>
-                <Bar dataKey="target" name="Target" fill="#e2e8f0" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="target" name="Target" fill="#e2e8f0" radius={[0,4,4,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -738,38 +740,33 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
 
         {/* DATA TABLE */}
         <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
               <div className="card-title">📋 Data Table</div>
               <div className="card-sub">Yearly values for all cities</div>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-coral btn-sm" onClick={downloadPDF}>
-                <I d={ic.pdf} size={13} /> Export PDF
-              </button>
-              <button className="btn btn-emerald btn-sm" onClick={downloadCSV}>
-                <I d={ic.dl} size={13} /> Export CSV
-              </button>
-            </div>
+            <button className="btn btn-emerald btn-sm" onClick={() => showNotif("CSV downloaded ✓")}>
+              <I d={ic.dl} size={13} /> Export CSV
+            </button>
           </div>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Year</th>
-                  {CITIES.map(c => <th key={c.name}>{c.name}</th>)}
+                  {CITIES.map(c=><th key={c.name}>{c.name}</th>)}
                   <th>Avg</th>
                 </tr>
               </thead>
               <tbody>
-                {yearData.map(row => {
-                  const vals = CITIES.map(c => row[c.name]);
-                  const avg = (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
+                {yearData.map(row=>{
+                  const vals = CITIES.map(c=>row[c.name]);
+                  const avg  = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
                   return (
                     <tr key={row.year}>
                       <td><span className="badge badge-teal">{row.year}</span></td>
-                      {CITIES.map(c => <td key={c.name} className="td-mono">{row[c.name]}</td>)}
-                      <td className="td-mono" style={{ fontWeight: 700, color: "var(--violet)" }}>{avg}</td>
+                      {CITIES.map(c=><td key={c.name} className="td-mono">{row[c.name]}</td>)}
+                      <td className="td-mono" style={{fontWeight:700,color:"var(--violet)"}}>{avg}</td>
                     </tr>
                   );
                 })}
@@ -783,147 +780,116 @@ function CitizenDashboard({ filters, setFilters, selectedCities, setSelectedCiti
 }
 
 /* ─── CHARTS EXPLORER ───────────────────────────────────────────────────── */
-function ChartsExplorer({ showNotif }) {
+function ChartsExplorer({showNotif}) {
   const [active, setActive] = useState("line");
   const yearData = makeYearData("gdp");
   const pieData = makePieData("education");
   const barData = makeBarData();
   const radarData = CITIES.map(c => ({ city: c.name, score: +(40 + Math.random() * 60).toFixed(0) }));
 
-  const downloadCSV = () => {
-    let headers = [];
-    let rows = [];
-    let filename = `export_${active}_${new Date().toISOString().split('T')[0]}.csv`;
-
-    if (active === "line") {
-      headers = ["Year", ...CITIES.map(c => c.name)];
-      rows = yearData.map(row => [row.year, ...CITIES.map(c => row[c.name])].join(","));
-    } else if (active === "bar") {
-      headers = ["City", "Value", "Target"];
-      rows = barData.map(row => [row.city, row.value, row.target].join(","));
-    } else if (active === "pie") {
-      headers = ["Name", "Value"];
-      rows = pieData.map(row => [row.name, row.value].join(","));
-    } else if (active === "radar") {
-      headers = ["City", "Score"];
-      rows = radarData.map(row => [row.city, row.score].join(","));
-    }
-
-    const csvContent = [headers.join(","), ...rows].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showNotif(`${active.toUpperCase()} data exported ✓`);
-  };
-
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
-      <div className="fade-up" style={{ marginBottom: 24 }}>
-        <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: 28, marginBottom: 4 }}>Interactive Charts</div>
-        <div style={{ color: "var(--muted)", fontSize: 14 }}>Explore data through multiple visualization types</div>
+    <div style={{flex:1, overflowY:"auto", padding:"28px"}}>
+      <div className="fade-up" style={{marginBottom:24}}>
+        <div style={{fontFamily:"Outfit",fontWeight:900,fontSize:28,marginBottom:4}}>Interactive Charts</div>
+        <div style={{color:"var(--muted)",fontSize:14}}>Explore data through multiple visualization types</div>
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }} className="fade-up-1">
-        {[["line", "📈", "Line Chart"], ["bar", "📊", "Bar Chart"], ["pie", "🥧", "Pie Chart"], ["radar", "🕸", "Radar Chart"]].map(([k, em, l]) => (
-          <button key={k} className={`btn ${active === k ? "btn-primary" : "btn-outline"}`} onClick={() => setActive(k)}>
+      <div style={{display:"flex",gap:10,marginBottom:24,flexWrap:"wrap"}} className="fade-up-1">
+        {[["line","📈","Line Chart"],["bar","📊","Bar Chart"],["pie","🥧","Pie Chart"],["radar","🕸","Radar Chart"]].map(([k,em,l])=>(
+          <button key={k} className={`btn ${active===k?"btn-primary":"btn-outline"}`} onClick={()=>setActive(k)}>
             {em} {l}
           </button>
         ))}
       </div>
 
-      <div className="fade-up-2" style={{ marginBottom: 20 }}>
+      <div className="fade-up-2" style={{marginBottom:20}}>
         <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div className="card-title" style={{ fontSize: 17 }}>
-              {active === "line" ? "📈 Line Chart — GDP Trends"
-                : active === "bar" ? "📊 Bar Chart — Healthcare Metrics"
-                  : active === "pie" ? "🥧 Pie Chart — Education Distribution"
-                    : "🕸 Radar Chart — City Performance Score"}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <div className="card-title" style={{fontSize:17}}>
+              {active==="line" ? "📈 Line Chart — GDP Trends"
+               :active==="bar"  ? "📊 Bar Chart — Healthcare Metrics"
+               :active==="pie"  ? "🥧 Pie Chart — Education Distribution"
+               : "🕸 Radar Chart — City Performance Score"}
             </div>
-            <button className="btn btn-outline btn-sm" onClick={downloadCSV}>
+            <button className="btn btn-outline btn-sm" onClick={() => showNotif("Chart exported as PNG ✓")}>
               <I d={ic.dl} size={13} /> Export
             </button>
           </div>
           <ResponsiveContainer width="100%" height={320}>
-            {active === "line" ? (
+            {active==="line" ? (
               <LineChart data={yearData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="year" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip {...TS} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                {CITIES.slice(0, 4).map((c, i) => (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+                <XAxis dataKey="year" tick={{fontSize:12}}/>
+                <YAxis tick={{fontSize:12}}/>
+                <Tooltip {...TS}/>
+                <Legend wrapperStyle={{fontSize:12}}/>
+                {CITIES.slice(0,4).map((c,i)=>(
                   <Line key={c.name} type="monotone" dataKey={c.name}
-                    stroke={c.color} strokeWidth={2.5} dot={{ r: 4 }} />
+                    stroke={c.color} strokeWidth={2.5} dot={{r:4}}/>
                 ))}
               </LineChart>
-            ) : active === "bar" ? (
+            ) : active==="bar" ? (
               <BarChart data={barData} barCategoryGap="25%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="city" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip {...TS} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="value" name="Score" radius={[6, 6, 0, 0]}>
-                  {barData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+                <XAxis dataKey="city" tick={{fontSize:12}}/>
+                <YAxis tick={{fontSize:12}}/>
+                <Tooltip {...TS}/>
+                <Legend wrapperStyle={{fontSize:12}}/>
+                <Bar dataKey="value" name="Score" radius={[6,6,0,0]}>
+                  {barData.map((_,i)=><Cell key={i} fill={COLORS[i]}/>)}
                 </Bar>
-                <Bar dataKey="target" name="Target" fill="#cbd5e1" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="target" name="Target" fill="#cbd5e1" radius={[6,6,0,0]}/>
               </BarChart>
-            ) : active === "pie" ? (
+            ) : active==="pie" ? (
               <PieChart>
                 <Pie data={pieData} cx="50%" cy="50%" outerRadius={130} paddingAngle={3} dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}>
-                  {pieData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                  label={({name,percent})=>`${name}: ${(percent*100).toFixed(0)}%`}>
+                  {pieData.map((_,i)=><Cell key={i} fill={COLORS[i]}/>)}
                 </Pie>
-                <Tooltip {...TS} />
-                <Legend iconType="circle" iconSize={10} wrapperStyle={{ fontSize: 12 }} />
+                <Tooltip {...TS}/>
+                <Legend iconType="circle" iconSize={10} wrapperStyle={{fontSize:12}}/>
               </PieChart>
             ) : (
               <RadarChart cx="50%" cy="50%" outerRadius={130} data={radarData}>
-                <PolarGrid stroke="#e2e8f0" />
-                <PolarAngleAxis dataKey="city" tick={{ fontSize: 12 }} />
-                <Radar dataKey="score" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.25} strokeWidth={2} />
-                <Tooltip {...TS} />
+                <PolarGrid stroke="#e2e8f0"/>
+                <PolarAngleAxis dataKey="city" tick={{fontSize:12}}/>
+                <Radar dataKey="score" stroke="#0ea5e9" fill="#0ea5e9" fillOpacity={0.25} strokeWidth={2}/>
+                <Tooltip {...TS}/>
               </RadarChart>
             )}
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="fade-up-3" style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 15, marginBottom: 14 }}>📊 Chart Gallery</div>
+      <div className="fade-up-3" style={{fontFamily:"Outfit",fontWeight:700,fontSize:15,marginBottom:14}}>📊 Chart Gallery</div>
       <div className="charts-row two fade-up-4">
         {[
-          { title: "Population Growth", sub: "2020–2026 trend", data: yearData, type: "area" },
+          { title: "Population Growth", sub: "2018–2024 trend", data: yearData, type: "area" },
           { title: "City Distribution", sub: "Population share", data: pieData, type: "pie" },
         ].map(({ title, sub, data, type }, idx) => (
           <div key={idx} className="card">
             <div className="card-title">{title}</div>
             <div className="card-sub">{sub}</div>
             <ResponsiveContainer width="100%" height={180}>
-              {type === "area" ? (
-                <AreaChart data={data.slice(0, 5)}>
+              {type==="area" ? (
+                <AreaChart data={data.slice(0,5)}>
                   <defs>
                     <linearGradient id={`mini${idx}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={COLORS[idx * 2]} stopOpacity={0.35} />
-                      <stop offset="100%" stopColor={COLORS[idx * 2]} stopOpacity={0} />
+                      <stop offset="0%"   stopColor={COLORS[idx*2]} stopOpacity={0.35}/>
+                      <stop offset="100%" stopColor={COLORS[idx*2]} stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="year" tick={{ fontSize: 10 }} hide />
-                  <YAxis tick={{ fontSize: 10 }} hide />
-                  <Tooltip {...TS} />
-                  <Area type="monotone" dataKey="Mumbai" stroke={COLORS[0]} fill={`url(#mini${idx})`} strokeWidth={2} />
+                  <XAxis dataKey="year" tick={{fontSize:10}} hide/>
+                  <YAxis tick={{fontSize:10}} hide/>
+                  <Tooltip {...TS}/>
+                  <Area type="monotone" dataKey="Mumbai" stroke={COLORS[0]} fill={`url(#mini${idx})`} strokeWidth={2}/>
                 </AreaChart>
               ) : (
                 <PieChart>
                   <Pie data={data} cx="50%" cy="50%" outerRadius={65} dataKey="value">
-                    {data.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                    {data.map((_,i)=><Cell key={i} fill={COLORS[i]}/>)}
                   </Pie>
-                  <Tooltip {...TS} />
+                  <Tooltip {...TS}/>
                 </PieChart>
               )}
             </ResponsiveContainer>
@@ -936,23 +902,23 @@ function ChartsExplorer({ showNotif }) {
 
 /* ─── DOWNLOAD REPORTS ──────────────────────────────────────────────────── */
 /* BUG FIX: added missing closing brace for the component                   */
-function DownloadReports({ showNotif }) {
+function DownloadReports({showNotif}) {
   const [selected, setSelected] = useState([]);
-  const [loading, setLoading] = useState(null);
+  const [loading,  setLoading]  = useState(null);
 
   const reports = [
-    { id: 1, title: "Annual Population Report 2024", category: "Population", size: "4.2 MB", rows: "14,200", icon: "👥", color: "teal" },
-    { id: 2, title: "GDP Growth Analysis Q4 2023", category: "Economics", size: "2.1 MB", rows: "8,400", icon: "💰", color: "violet" },
-    { id: 3, title: "Healthcare Infrastructure Survey", category: "Health", size: "6.8 MB", rows: "22,100", icon: "🏥", color: "coral" },
-    { id: 4, title: "National Literacy Rate Survey", category: "Education", size: "1.9 MB", rows: "5,600", icon: "🎓", color: "amber" },
-    { id: 5, title: "Air Quality Index Report 2023", category: "Environment", size: "3.5 MB", rows: "31,500", icon: "🌿", color: "emerald" },
-    { id: 6, title: "Urban Employment Statistics", category: "Economics", size: "2.8 MB", rows: "18,200", icon: "💼", color: "teal" },
-    { id: 7, title: "Rural Development Index", category: "Population", size: "1.4 MB", rows: "9,800", icon: "🏡", color: "violet" },
-    { id: 8, title: "Renewable Energy Adoption", category: "Environment", size: "2.2 MB", rows: "7,400", icon: "⚡", color: "amber" },
+    {id:1,title:"Annual Population Report 2024",    category:"Population", size:"4.2 MB",rows:"14,200",icon:"👥",color:"teal"},
+    {id:2,title:"GDP Growth Analysis Q4 2023",      category:"Economics",  size:"2.1 MB",rows:"8,400", icon:"💰",color:"violet"},
+    {id:3,title:"Healthcare Infrastructure Survey", category:"Health",     size:"6.8 MB",rows:"22,100",icon:"🏥",color:"coral"},
+    {id:4,title:"National Literacy Rate Survey",    category:"Education",  size:"1.9 MB",rows:"5,600", icon:"🎓",color:"amber"},
+    {id:5,title:"Air Quality Index Report 2023",    category:"Environment",size:"3.5 MB",rows:"31,500",icon:"🌿",color:"emerald"},
+    {id:6,title:"Urban Employment Statistics",      category:"Economics",  size:"2.8 MB",rows:"18,200",icon:"💼",color:"teal"},
+    {id:7,title:"Rural Development Index",          category:"Population", size:"1.4 MB",rows:"9,800", icon:"🏡",color:"violet"},
+    {id:8,title:"Renewable Energy Adoption",        category:"Environment",size:"2.2 MB",rows:"7,400", icon:"⚡",color:"amber"},
   ];
 
   const toggleSel = (id) =>
-    setSelected(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+    setSelected(p => p.includes(id) ? p.filter(x=>x!==id) : [...p, id]);
 
   const handleDl = (id, title, fmt) => {
     setLoading(id);
@@ -1008,88 +974,81 @@ function DownloadReports({ showNotif }) {
   };
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
-      <div className="fade-up" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+    <div style={{flex:1, overflowY:"auto", padding:"28px"}}>
+      <div className="fade-up" style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24}}>
         <div>
-          <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: 28, marginBottom: 4 }}>Download Reports</div>
-          <div style={{ color: "var(--muted)", fontSize: 14 }}>Download public datasets as CSV or PDF</div>
+          <div style={{fontFamily:"Outfit",fontWeight:900,fontSize:28,marginBottom:4}}>Download Reports</div>
+          <div style={{color:"var(--muted)",fontSize:14}}>Download public datasets as CSV or PDF</div>
         </div>
         {selected.length > 0 && (
           <button className="btn btn-primary"
-            onClick={() => {
-              selected.forEach(id => {
-                const report = reports.find(r => r.id === id);
-                if (report) handleDl(id, report.title, "CSV");
-              });
-              showNotif(`${selected.length} reports in queue ✓`);
-              setSelected([]);
-            }}>
+            onClick={() => { showNotif(`${selected.length} files downloaded ✓`); setSelected([]); }}>
             <I d={ic.dl} size={15} /> Download Selected ({selected.length})
           </button>
         )}
       </div>
 
       {/* FORMAT CARDS */}
-      <div className="charts-row two fade-up-1" style={{ marginBottom: 24 }}>
+      <div className="charts-row two fade-up-1" style={{marginBottom:24}}>
         {[
-          { fmt: "CSV", icon: "📄", color: "#10b981", bg: "#d1fae5", desc: "Machine-readable comma-separated values. Ideal for data analysis with Excel, Python, R." },
-          { fmt: "PDF", icon: "📕", color: "#f43f5e", bg: "#ffe4e6", desc: "Formatted report with charts and insights. Perfect for presentations and sharing." },
-        ].map(({ fmt, icon, color, bg, desc }) => (
-          <div key={fmt} className="card" style={{ borderColor: color + "44", background: `linear-gradient(135deg,${bg},#fff)` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{icon}</div>
+          {fmt:"CSV", icon:"📄", color:"#10b981", bg:"#d1fae5", desc:"Machine-readable comma-separated values. Ideal for data analysis with Excel, Python, R."},
+          {fmt:"PDF", icon:"📕", color:"#f43f5e", bg:"#ffe4e6", desc:"Formatted report with charts and insights. Perfect for presentations and sharing."},
+        ].map(({fmt,icon,color,bg,desc})=>(
+          <div key={fmt} className="card" style={{borderColor:color+"44",background:`linear-gradient(135deg,${bg},#fff)`}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
+              <div style={{width:48,height:48,borderRadius:12,background:color+"22",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>{icon}</div>
               <div>
-                <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 18, color }}>{fmt} Format</div>
-                <div style={{ fontSize: 12, color: "var(--muted)" }}>Available for all datasets</div>
+                <div style={{fontFamily:"Outfit",fontWeight:800,fontSize:18,color}}>{fmt} Format</div>
+                <div style={{fontSize:12,color:"var(--muted)"}}>Available for all datasets</div>
               </div>
             </div>
-            <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>{desc}</p>
+            <p style={{fontSize:13,color:"var(--muted)",lineHeight:1.6}}>{desc}</p>
           </div>
         ))}
       </div>
 
-      <div className="fade-up-2" style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 15, marginBottom: 14 }}>📂 Available Reports</div>
+      <div className="fade-up-2" style={{fontFamily:"Outfit",fontWeight:700,fontSize:15,marginBottom:14}}>📂 Available Reports</div>
 
       {/* REPORTS LIST */}
       {/* BUG FIX: removed stray quote in gap:8" → gap:8 */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }} className="fade-up-3">
-        {reports.map(r => (
+      <div style={{display:"flex",flexDirection:"column",gap:10}} className="fade-up-3">
+        {reports.map(r=>(
           <div key={r.id} className="dl-card"
             style={{
               borderColor: selected.includes(r.id) ? "var(--teal)" : "var(--border)",
-              background: selected.includes(r.id) ? "#e0f2fe11" : "var(--card)",
+              background:  selected.includes(r.id) ? "#e0f2fe11"   : "var(--card)",
             }}>
 
-            <div className={`cb-box${selected.includes(r.id) ? " checked" : ""}`}
-              style={{ cursor: "pointer" }} onClick={() => toggleSel(r.id)}>
-              {selected.includes(r.id) && <I d={ic.check} size={10} c="#fff" sw={3} />}
+            <div className={`cb-box${selected.includes(r.id)?" checked":""}`}
+              style={{cursor:"pointer"}} onClick={()=>toggleSel(r.id)}>
+              {selected.includes(r.id) && <I d={ic.check} size={10} c="#fff" sw={3}/>}
             </div>
 
-            <div className="dl-icon" style={{ background: `var(--${r.color})22` }}>{r.icon}</div>
+            <div className="dl-icon" style={{background:`var(--${r.color})22`}}>{r.icon}</div>
 
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 2, fontFamily: "Outfit" }}>{r.title}</div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:600,fontSize:14,marginBottom:2,fontFamily:"Outfit"}}>{r.title}</div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
                 <span className={`badge badge-${r.color}`}>{r.category}</span>
-                <span style={{ fontSize: 12, color: "var(--muted)" }}>{r.rows} rows</span>
-                <span style={{ fontSize: 12, color: "var(--muted)" }}>•</span>
-                <span style={{ fontSize: 12, color: "var(--muted)" }}>{r.size}</span>
+                <span style={{fontSize:12,color:"var(--muted)"}}>{r.rows} rows</span>
+                <span style={{fontSize:12,color:"var(--muted)"}}>•</span>
+                <span style={{fontSize:12,color:"var(--muted)"}}>{r.size}</span>
               </div>
             </div>
 
             {/* BUG FIX: removed stray quote in gap:8" */}
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
               <button className="btn btn-outline btn-sm"
-                style={{ borderColor: "#10b981", color: "#10b981" }}
-                onClick={() => handleDl(r.id, r.title, "CSV")}
-                disabled={loading === r.id}>
-                <I d={loading === r.id ? ic.refresh : ic.csv} size={12} c="#10b981" /> CSV
+                style={{borderColor:"#10b981",color:"#10b981"}}
+                onClick={()=>handleDl(r.id,r.title,"CSV")}
+                disabled={loading===r.id}>
+                <I d={loading===r.id ? ic.refresh : ic.csv} size={12} c="#10b981"/> CSV
               </button>
               <button className="btn btn-outline btn-sm"
-                style={{ borderColor: "#f43f5e", color: "#f43f5e" }}
-                onClick={() => handleDl(r.id, r.title, "PDF")}
-                disabled={loading === r.id}>
-                <I d={loading === r.id ? ic.refresh : ic.pdf} size={12} c="#f43f5e" /> PDF
+                style={{borderColor:"#f43f5e",color:"#f43f5e"}}
+                onClick={()=>handleDl(r.id,r.title,"PDF")}
+                disabled={loading===r.id}>
+                <I d={loading===r.id ? ic.refresh : ic.pdf} size={12} c="#f43f5e"/> PDF
               </button>
             </div>
           </div>
@@ -1100,11 +1059,11 @@ function DownloadReports({ showNotif }) {
 }   /* ← BUG FIX: this closing brace was MISSING in the original code */
 
 /* ─── ADMIN PANEL ───────────────────────────────────────────────────────── */
-function AdminPanel({ showNotif }) {
-  const [drag, setDrag] = useState(false);
-  const [uploads, setUploads] = useState(INITIAL_DATASETS);
+function AdminPanel({showNotif}) {
+  const [drag,     setDrag]     = useState(false);
+  const [uploads,  setUploads]  = useState(INITIAL_DATASETS);
   const [progress, setProgress] = useState(null);
-  const [form, setForm] = useState({ name: "", category: "Population", desc: "" });
+  const [form,     setForm]     = useState({name:"", category:"Population", desc:""});
   const fileRef = useRef();
 
   const simulateUpload = () => {
@@ -1124,9 +1083,9 @@ function AdminPanel({ showNotif }) {
               size: "1.2 MB",
               rows: Math.floor(5000 + Math.random() * 20000),
               status: "Processing",
-              date: new Date().toISOString().slice(0, 10),
+              date: new Date().toISOString().slice(0,10),
             }, ...u]);
-            setForm({ name: "", category: "Population", desc: "" });
+            setForm({name:"", category:"Population", desc:""});
             showNotif("Dataset uploaded successfully ✓");
           }, 400);
           return 100;
@@ -1137,25 +1096,25 @@ function AdminPanel({ showNotif }) {
   };
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "28px" }}>
-      <div className="fade-up" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+    <div style={{flex:1, overflowY:"auto", padding:"28px"}}>
+      <div className="fade-up" style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
         <div>
-          <div style={{ fontFamily: "Outfit", fontWeight: 900, fontSize: 28 }}>Admin Panel</div>
-          <div style={{ color: "var(--muted)", fontSize: 14, marginTop: 2 }}>Upload and manage public datasets</div>
+          <div style={{fontFamily:"Outfit",fontWeight:900,fontSize:28}}>Admin Panel</div>
+          <div style={{color:"var(--muted)",fontSize:14,marginTop:2}}>Upload and manage public datasets</div>
         </div>
-        <span className="badge badge-emerald" style={{ fontSize: 12, padding: "5px 12px", display: "flex", alignItems: "center", gap: 6 }}>
-          <span className="live-dot" /> System Online
+        <span className="badge badge-emerald" style={{fontSize:12,padding:"5px 12px",display:"flex",alignItems:"center",gap:6}}>
+          <span className="live-dot"/> System Online
         </span>
       </div>
 
       {/* ADMIN STATS */}
-      <div className="stat-grid fade-up-1" style={{ marginBottom: 24 }}>
+      <div className="stat-grid fade-up-1" style={{marginBottom:24}}>
         {[
-          { label: "Total Datasets", val: uploads.length, color: "teal" },
-          { label: "Active", val: uploads.filter(u => u.status === "Active").length, color: "emerald" },
-          { label: "Processing", val: uploads.filter(u => u.status === "Processing").length, color: "amber" },
-          { label: "Total Records", val: "94.2K", color: "violet" },
-        ].map(s => (
+          {label:"Total Datasets", val:uploads.length,                                color:"teal"},
+          {label:"Active",         val:uploads.filter(u=>u.status==="Active").length,  color:"emerald"},
+          {label:"Processing",     val:uploads.filter(u=>u.status==="Processing").length, color:"amber"},
+          {label:"Total Records",  val:"94.2K",                                        color:"violet"},
+        ].map(s=>(
           <div key={s.label} className={`stat-card ${s.color}`}>
             <div className="stat-label">{s.label}</div>
             <div className={`stat-val ${s.color}`}>{s.val}</div>
@@ -1163,97 +1122,97 @@ function AdminPanel({ showNotif }) {
         ))}
       </div>
 
-      <div className="charts-row two fade-up-2" style={{ marginBottom: 24, alignItems: "start" }}>
+      <div className="charts-row two fade-up-2" style={{marginBottom:24,alignItems:"start"}}>
         {/* UPLOAD FORM */}
         <div className="card">
-          <div className="card-title" style={{ fontSize: 16, marginBottom: 16 }}>⬆ Upload New Dataset</div>
+          <div className="card-title" style={{fontSize:16,marginBottom:16}}>⬆ Upload New Dataset</div>
 
-          <div className={`upload-zone${drag ? " drag" : ""}`}
-            onDragOver={e => { e.preventDefault(); setDrag(true); }}
-            onDragLeave={() => setDrag(false)}
-            onDrop={e => { e.preventDefault(); setDrag(false); showNotif("File received — fill form to upload"); }}
-            onClick={() => fileRef.current.click()}>
-            <input ref={fileRef} type="file" style={{ display: "none" }} accept=".csv,.pdf,.xlsx" />
+          <div className={`upload-zone${drag?" drag":""}`}
+            onDragOver={e=>{e.preventDefault();setDrag(true);}}
+            onDragLeave={()=>setDrag(false)}
+            onDrop={e=>{e.preventDefault();setDrag(false);showNotif("File received — fill form to upload");}}
+            onClick={()=>fileRef.current.click()}>
+            <input ref={fileRef} type="file" style={{display:"none"}} accept=".csv,.pdf,.xlsx"/>
             <div className="upload-icon">
-              <I d={ic.upload} size={28} c="#0ea5e9" />
+              <I d={ic.upload} size={28} c="#0ea5e9"/>
             </div>
-            <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: 15, marginBottom: 6 }}>Drop files here or click to browse</div>
-            <div style={{ color: "var(--muted)", fontSize: 13 }}>Supports CSV, Excel, PDF — max 50 MB</div>
+            <div style={{fontFamily:"Outfit",fontWeight:700,fontSize:15,marginBottom:6}}>Drop files here or click to browse</div>
+            <div style={{color:"var(--muted)",fontSize:13}}>Supports CSV, Excel, PDF — max 50 MB</div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
+          <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:16}}>
             <div>
-              <div className="filter-label" style={{ marginBottom: 6 }}>Dataset Name *</div>
+              <div className="filter-label" style={{marginBottom:6}}>Dataset Name *</div>
               <input value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                onChange={e=>setForm(f=>({...f,name:e.target.value}))}
                 placeholder="e.g. Census 2024 Urban Areas"
-                style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--border)", borderRadius: 10, fontFamily: "DM Sans", fontSize: 13, outline: "none", background: "var(--bg)" }} />
+                style={{width:"100%",padding:"9px 12px",border:"1px solid var(--border)",borderRadius:10,fontFamily:"DM Sans",fontSize:13,outline:"none",background:"var(--bg)"}}/>
             </div>
             <div>
-              <div className="filter-label" style={{ marginBottom: 6 }}>Category</div>
-              <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-                {["Population", "Economics", "Health", "Education", "Environment", "Infrastructure"].map(c => (
+              <div className="filter-label" style={{marginBottom:6}}>Category</div>
+              <select value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
+                {["Population","Economics","Health","Education","Environment","Infrastructure"].map(c=>(
                   <option key={c}>{c}</option>
                 ))}
               </select>
             </div>
             <div>
-              <div className="filter-label" style={{ marginBottom: 6 }}>Description</div>
+              <div className="filter-label" style={{marginBottom:6}}>Description</div>
               <textarea value={form.desc}
-                onChange={e => setForm(f => ({ ...f, desc: e.target.value }))}
+                onChange={e=>setForm(f=>({...f,desc:e.target.value}))}
                 placeholder="Brief description of this dataset..."
                 rows={3}
-                style={{ width: "100%", padding: "9px 12px", border: "1px solid var(--border)", borderRadius: 10, fontFamily: "DM Sans", fontSize: 13, resize: "none", outline: "none", background: "var(--bg)" }} />
+                style={{width:"100%",padding:"9px 12px",border:"1px solid var(--border)",borderRadius:10,fontFamily:"DM Sans",fontSize:13,resize:"none",outline:"none",background:"var(--bg)"}}/>
             </div>
 
             {progress !== null && (
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}>
                   <span>Uploading…</span><span>{Math.round(progress)}%</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${progress}%` }} />
+                  <div className="progress-fill" style={{width:`${progress}%`}}/>
                 </div>
               </div>
             )}
 
-            <button className="btn btn-primary" style={{ justifyContent: "center" }}
+            <button className="btn btn-primary" style={{justifyContent:"center"}}
               onClick={simulateUpload} disabled={progress !== null}>
               {progress !== null
-                ? <><I d={ic.refresh} size={14} c="#fff" /> Uploading…</>
-                : <><I d={ic.upload} size={14} c="#fff" /> Upload Dataset</>}
+                ? <><I d={ic.refresh} size={14} c="#fff"/> Uploading…</>
+                : <><I d={ic.upload}  size={14} c="#fff"/> Upload Dataset</>}
             </button>
           </div>
         </div>
 
         {/* QUICK ACTIONS + SYSTEM HEALTH */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
           <div className="card">
-            <div className="card-title" style={{ marginBottom: 12 }}>⚡ Quick Actions</div>
+            <div className="card-title" style={{marginBottom:12}}>⚡ Quick Actions</div>
             {[
-              { label: "Generate Summary Report", icon: ic.chart, color: "btn-primary" },
-              { label: "Export All Datasets", icon: ic.dl, color: "btn-emerald" },
-              { label: "Refresh Data Sources", icon: ic.refresh, color: "btn-outline" },
-              { label: "View System Logs", icon: ic.table, color: "btn-outline" },
-            ].map(({ label, icon, color }) => (
+              {label:"Generate Summary Report", icon:ic.chart,   color:"btn-primary"},
+              {label:"Export All Datasets",     icon:ic.dl,      color:"btn-emerald"},
+              {label:"Refresh Data Sources",    icon:ic.refresh, color:"btn-outline"},
+              {label:"View System Logs",        icon:ic.table,   color:"btn-outline"},
+            ].map(({label,icon,color})=>(
               <button key={label} className={`btn ${color}`}
-                style={{ width: "100%", justifyContent: "flex-start", marginBottom: 8 }}
-                onClick={() => showNotif(`${label} triggered ✓`)}>
-                <I d={icon} size={14} /> {label}
+                style={{width:"100%",justifyContent:"flex-start",marginBottom:8}}
+                onClick={()=>showNotif(`${label} triggered ✓`)}>
+                <I d={icon} size={14}/> {label}
               </button>
             ))}
           </div>
 
           <div className="card">
-            <div className="card-title" style={{ marginBottom: 10 }}>📊 System Health</div>
+            <div className="card-title" style={{marginBottom:10}}>📊 System Health</div>
             {[
-              ["API Status", "Online", "badge-emerald"],
-              ["DB Connection", "Healthy", "badge-emerald"],
-              ["Storage", "62% used", "badge-amber"],
-              ["Last Backup", "2h ago", "badge-teal"],
-            ].map(([k, v, b]) => (
-              <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: "1px solid var(--border)" }}>
-                <span style={{ fontSize: 13, color: "var(--muted)" }}>{k}</span>
+              ["API Status",    "Online",    "badge-emerald"],
+              ["DB Connection", "Healthy",   "badge-emerald"],
+              ["Storage",       "62% used",  "badge-amber"],
+              ["Last Backup",   "2h ago",    "badge-teal"],
+            ].map(([k,v,b])=>(
+              <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:"1px solid var(--border)"}}>
+                <span style={{fontSize:13,color:"var(--muted)"}}>{k}</span>
                 <span className={`badge ${b}`}>{v}</span>
               </div>
             ))}
@@ -1263,11 +1222,11 @@ function AdminPanel({ showNotif }) {
 
       {/* DATASETS TABLE */}
       <div className="card fade-up-3">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div className="card-title" style={{ fontSize: 16 }}>📂 Manage Datasets</div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div className="card-title" style={{fontSize:16}}>📂 Manage Datasets</div>
           <div className="search-wrap">
-            <span className="search-icon"><I d={ic.search} size={14} /></span>
-            <input placeholder="Search datasets…" />
+            <span className="search-icon"><I d={ic.search} size={14}/></span>
+            <input placeholder="Search datasets…"/>
           </div>
         </div>
         <div className="table-wrap">
@@ -1278,31 +1237,31 @@ function AdminPanel({ showNotif }) {
               </tr>
             </thead>
             <tbody>
-              {uploads.map(u => (
+              {uploads.map(u=>(
                 <tr key={u.id}>
-                  <td style={{ fontWeight: 600, fontFamily: "Outfit" }}>{u.name}</td>
+                  <td style={{fontWeight:600,fontFamily:"Outfit"}}>{u.name}</td>
                   <td><span className="badge badge-teal">{u.category}</span></td>
                   <td className="td-mono">{u.rows.toLocaleString()}</td>
                   <td className="td-mono">{u.size}</td>
                   <td>
-                    <span className={`badge ${u.status === "Active" ? "badge-emerald" : "badge-amber"}`}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                      {u.status === "Processing" &&
-                        <span className="live-dot" style={{ background: "var(--amber)" }} />}
+                    <span className={`badge ${u.status==="Active"?"badge-emerald":"badge-amber"}`}
+                      style={{display:"inline-flex",alignItems:"center",gap:5}}>
+                      {u.status==="Processing" &&
+                        <span className="live-dot" style={{background:"var(--amber)"}}/>}
                       {u.status}
                     </span>
                   </td>
-                  <td style={{ color: "var(--muted)", fontSize: 12 }}>{u.date}</td>
+                  <td style={{color:"var(--muted)",fontSize:12}}>{u.date}</td>
                   <td>
-                    <div style={{ display: "flex", gap: 6 }}>
+                    <div style={{display:"flex",gap:6}}>
                       <button className="btn btn-outline btn-sm"
-                        onClick={() => showNotif(`Viewing ${u.name}`)}>
-                        <I d={ic.eye} size={12} />
+                        onClick={()=>showNotif(`Viewing ${u.name}`)}>
+                        <I d={ic.eye} size={12}/>
                       </button>
                       <button className="btn btn-outline btn-sm"
-                        style={{ borderColor: "#f43f5e44", color: "#f43f5e" }}
-                        onClick={() => { setUploads(p => p.filter(x => x.id !== u.id)); showNotif(`${u.name} deleted`); }}>
-                        <I d={ic.trash} size={12} />
+                        style={{borderColor:"#f43f5e44",color:"#f43f5e"}}
+                        onClick={()=>{setUploads(p=>p.filter(x=>x.id!==u.id));showNotif(`${u.name} deleted`);}}>
+                        <I d={ic.trash} size={12}/>
                       </button>
                     </div>
                   </td>
@@ -1324,8 +1283,8 @@ function Chartbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const API_KEY = "AIzaSyCxx6tlvJ6P3mHSqTjBoJTVOshfcWhBjjA";
-  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+  const API_KEY = "AIzaSyA6dcTfEx39HFdhO8yvej_0N9ie8Uwkxzs";
+  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -1357,48 +1316,31 @@ function Chartbot() {
   };
 
   const sendMessage = async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+    const message = input.trim();
+    if (!message) return;
 
-    const userMsg = { role: "user", content: text };
-    const currentMessages = [...messages, userMsg];
-    setMessages(currentMessages);
+    const userMsg = { role: 'user', content: message };
+    setMessages(prev => [...prev, userMsg]);
     setInput("");
     setLoading(true);
 
     try {
-      // Role mapping and consolidation for Gemini
-      const historyItems = currentMessages
-        .filter(m => m.role && m.content && !m.isError)
-        .map(m => ({
-          role: m.role === "assistant" ? "model" : "user",
-          parts: [{ text: m.content }]
-        }));
-
-      const finalHistory = [];
-      historyItems.forEach(item => {
-        if (finalHistory.length > 0 && finalHistory[finalHistory.length - 1].role === item.role) {
-          finalHistory[finalHistory.length - 1].parts[0].text += "\n" + item.parts[0].text;
-        } else {
-          finalHistory.push(item);
-        }
+      const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: message }] }]
+        })
       });
 
-      console.log("Sending to AI...", finalHistory);
+      if (!response.ok) throw new Error('API request failed');
 
-      const res = await axios.post(`${API_URL}?key=${API_KEY}`,
-        { contents: finalHistory },
-        { timeout: 30000 }
-      );
-
-      const aiText = res.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!aiText) throw new Error("Empty response from AI (possibly blocked)");
-
-      setMessages(prev => [...prev, { role: "assistant", content: aiText }]);
-    } catch (err) {
-      console.error("Gemini Details:", err.response?.data || err.message);
-      const msg = err.response?.data?.error?.message || err.message;
-      setMessages(prev => [...prev, { role: "assistant", content: `API Error: ${msg}`, isError: true }]);
+      const data = await response.json();
+      const aiMessage = data.candidates[0].content.parts[0].text;
+      setMessages(prev => [...prev, { role: 'assistant', content: aiMessage }]);
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${error.message}`, isError: true }]);
     } finally {
       setLoading(false);
     }
@@ -1443,7 +1385,7 @@ function Chartbot() {
         <div style={{ padding: '16px 28px', background: 'var(--card)', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: '18px' }}>AI Assistant</div>
-            <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Powered by Gemini 1.5 Flash</div>
+            <div style={{ fontSize: '12px', color: 'var(--muted)' }}>Powered by Gemini 2.5 Flash</div>
           </div>
         </div>
 
@@ -1461,7 +1403,7 @@ function Chartbot() {
               <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: msg.role === 'user' ? 'var(--teal)' : 'var(--violet)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', flexShrink: 0, boxShadow: '0 2px 8px #0001' }}>
                 {msg.role === 'user' ? '👤' : '🤖'}
               </div>
-              <div style={{ maxWidth: '70%', padding: '14px 18px', borderRadius: '16px', fontSize: '14px', lineHeight: 1.6, background: msg.role === 'user' ? 'linear-gradient(135deg, var(--teal), var(--violet))' : 'var(--card)', color: msg.isError ? '#c33' : (msg.role === 'user' ? '#fff' : 'var(--text)'), border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none', boxShadow: '0 2px 12px #00000008', borderTopRightRadius: msg.role === 'user' ? '4px' : '16px', borderTopLeftRadius: msg.role === 'assistant' ? '4px' : '16px', backgroundColor: msg.isError ? '#fee' : undefined }}>
+              <div style={{ maxWidth: '70%', padding: '14px 18px', borderRadius: '16px', fontSize: '14px', lineHeight: 1.6, background: msg.role === 'user' ? 'linear-gradient(135deg, var(--teal), var(--violet))' : 'var(--card)', color: msg.role === 'user' ? '#fff' : 'var(--text)', border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none', boxShadow: '0 2px 12px #00000008', borderTopRightRadius: msg.role === 'user' ? '4px' : '16px', borderTopLeftRadius: msg.role === 'assistant' ? '4px' : '16px', backgroundColor: msg.isError ? '#fee' : undefined, color: msg.isError ? '#c33' : undefined }}>
                 <div style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
               </div>
             </div>
@@ -1495,8 +1437,8 @@ function Chartbot() {
 
 /* ─── ROOT APP ──────────────────────────────────────────────────────────── */
 export default function App() {
-  const [page, setPage] = useState("dashboard");
-  const [collapsed, setCollapsed] = useState(false);
+  const [page,       setPage]       = useState("dashboard");
+  const [collapsed,  setCollapsed]  = useState(false);
   const [showFilter, setShowFilter] = useState(true);
   const [notif, showNotif] = useNotif();
   const [user, setUser] = useState({ name: "Admin User", email: "admin@dataportal.gov" });
@@ -1509,46 +1451,41 @@ export default function App() {
   }, []);
 
   const [filters, setFilters] = useState({
-    yearFrom: "2020", yearTo: "2026",
+    yearFrom: "2018", yearTo: "2024",
     region: "All India",
     categories: ["population", "gdp", "health", "education", "environment"],
   });
-  const [selectedCities, setSelectedCities] = useState(["Mumbai", "Delhi", "Bangalore"]);
+  const [selectedCities, setSelectedCities] = useState(["Mumbai","Delhi","Bangalore"]);
 
   const nav = [
-    { key: "dashboard", icon: ic.home, label: "Citizen Dashboard", badge: null },
-    { key: "charts", icon: ic.chart, label: "Interactive Charts", badge: null },
-    { key: "download", icon: ic.dl, label: "Download Reports", badge: "New" },
-    { key: "admin", icon: ic.admin, label: "Admin Panel", badge: null },
-    { key: "chatbot", icon: ic.bell, label: "Chatbot", badge: null },
+    {key:"dashboard", icon:ic.home,  label:"Citizen Dashboard",  badge:null},
+    {key:"charts",    icon:ic.chart, label:"Interactive Charts",  badge:null},
+    {key:"download",  icon:ic.dl,    label:"Download Reports",    badge:"New"},
+    {key:"admin",     icon:ic.admin, label:"Admin Panel",         badge:null},
   ];
 
   return (
     <>
-      <style>{`
-        ${CSS}
-        @keyframes spin { from {transform:rotate(0deg)} to {transform:rotate(360deg)} }
-        .spin { animation: spin 1s linear infinite; }
-      `}</style>
+      <style>{CSS}</style>
       <div className="shell">
 
         {/* ── SIDEBAR ── */}
-        <div className={`sidebar${collapsed ? " collapsed" : ""}`}>
+        <div className={`sidebar${collapsed?" collapsed":""}`}>
           <div className="sb-logo">
             <div className="sb-logo-icon">
-              <I d={ic.globe} size={18} c="#fff" />
+              <I d={ic.globe} size={18} c="#fff"/>
             </div>
             {!collapsed && <div className="sb-logo-text">Data<span>Portal</span></div>}
           </div>
 
           {!collapsed && <div className="sb-section">Navigation</div>}
-          {nav.map(n => (
-            <div key={n.key} className={`sb-item${page === n.key ? " active" : ""}`}
-              onClick={() => setPage(n.key)}>
-              <I d={n.icon} size={18} />
+          {nav.map(n=>(
+            <div key={n.key} className={`sb-item${page===n.key?" active":""}`}
+              onClick={()=>setPage(n.key)}>
+              <I d={n.icon} size={18}/>
               {!collapsed && (
                 <>
-                  <span style={{ flex: 1 }}>{n.label}</span>
+                  <span style={{flex:1}}>{n.label}</span>
                   {n.badge && <span className="sb-badge">{n.badge}</span>}
                 </>
               )}
@@ -1557,14 +1494,14 @@ export default function App() {
 
           {!collapsed && (
             <>
-              <div className="sb-divider" />
+              <div className="sb-divider"/>
               <div className="sb-section"></div>
               <div style={{ margin: "4px 12px", padding: "12px", borderRadius: 12, background: "linear-gradient(135deg,#e0f2fe,#ede9fe)", border: "1px solid #bae6fd" }}>
                 <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: 13, color: "var(--teal)" }}></div>
                 <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4, lineHeight: 1.5 }}>  </div>
                 <div style={{ marginTop: 8, display: "flex", gap: 4 }}>
                   <span className="badge badge-teal" style={{ fontSize: 10 }}></span>
-                  <span className="badge badge-violet" style={{ fontSize: 10 }}></span>
+                  <span className="badge badge-violet" style={{ fontSize: 10 }}>2024</span>
                 </div>
               </div>
             </>
@@ -1572,13 +1509,13 @@ export default function App() {
 
           {/* BUG FIX: added display:flex to sb-bottom via CSS */}
           <div className="sb-bottom">
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg,var(--teal),var(--violet))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <I d={ic.user} size={16} c="#fff" />
+            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,var(--teal),var(--violet))",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <I d={ic.user} size={16} c="#fff"/>
             </div>
             {!collapsed && (
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</div>
-                <div style={{ fontSize: 11, color: "var(--muted)" }}>{user.email}</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>Admin User</div>
+                <div style={{ fontSize: 11, color: "var(--muted)" }}>admin@dataportal.gov</div>
               </div>
             )}
           </div>
@@ -1588,64 +1525,63 @@ export default function App() {
         <div className="main">
           {/* TOPBAR */}
           <div className="topbar">
-            <button className="btn btn-outline" style={{ padding: "7px 10px" }}
-              onClick={() => setCollapsed(c => !c)}>
-              <I d={ic.menu} size={18} />
+            <button className="btn btn-outline" style={{padding:"7px 10px"}}
+              onClick={()=>setCollapsed(c=>!c)}>
+              <I d={ic.menu} size={18}/>
             </button>
             <div className="topbar-title">
-              <span>DataPortal</span>
+              <span>DataPortal</span> — CHAKRAVYUH 2.0
             </div>
             <div className="search-wrap">
-              <span className="search-icon"><I d={ic.search} size={14} /></span>
-              <input placeholder="Search datasets, cities, reports…" />
+              <span className="search-icon"><I d={ic.search} size={14}/></span>
+              <input placeholder="Search datasets, cities, reports…"/>
             </div>
-            <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
-              {page === "dashboard" && (
-                <button className={`btn ${showFilter ? "btn-primary" : "btn-outline"} btn-sm`}
-                  onClick={() => setShowFilter(f => !f)}>
-                  <I d={ic.filter} size={13} /> Filters
+            <div style={{marginLeft:"auto",display:"flex",gap:10,alignItems:"center"}}>
+              {page==="dashboard" && (
+                <button className={`btn ${showFilter?"btn-primary":"btn-outline"} btn-sm`}
+                  onClick={()=>setShowFilter(f=>!f)}>
+                  <I d={ic.filter} size={13}/> Filters
                 </button>
               )}
-              <button className="btn btn-outline" style={{ padding: "7px 10px" }}
-                onClick={() => showNotif("No new notifications")}>
-                <I d={ic.bell} size={16} />
+              <button className="btn btn-outline" style={{padding:"7px 10px"}}
+                onClick={()=>showNotif("No new notifications")}>
+                <I d={ic.bell} size={16}/>
               </button>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", borderRadius: 10, border: "1px solid var(--border)", cursor: "pointer" }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg,var(--teal),var(--violet))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <I d={ic.user} size={14} c="#fff" />
+              <div style={{display:"flex",alignItems:"center",gap:8,padding:"5px 10px",borderRadius:10,border:"1px solid var(--border)",cursor:"pointer"}}>
+                <div style={{width:28,height:28,borderRadius:8,background:"linear-gradient(135deg,var(--teal),var(--violet))",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <I d={ic.user} size={14} c="#fff"/>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>Admin</div>
               </div>
             </div>
           </div>
 
           {/* PAGE CONTENT */}
-          <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
-            {page === "dashboard" && (
+          <div style={{display:"flex",flex:1,minHeight:0}}>
+            {page==="dashboard" && (
               <>
                 <CitizenDashboard
                   key="dash"
                   filters={filters} setFilters={setFilters}
                   selectedCities={selectedCities} setSelectedCities={setSelectedCities}
-                  showNotif={showNotif} />
+                  showNotif={showNotif}/>
                 {showFilter && (
                   <FilterPanel
                     filters={filters} setFilters={setFilters}
-                    selectedCities={selectedCities} setSelectedCities={setSelectedCities} />
+                    selectedCities={selectedCities} setSelectedCities={setSelectedCities}/>
                 )}
               </>
             )}
-            {page === "charts" && <ChartsExplorer key="charts" showNotif={showNotif} />}
-            {page === "download" && <DownloadReports key="dl" showNotif={showNotif} />}
-            {page === "admin" && <AdminPanel key="admin" showNotif={showNotif} />}
-            {page === "chatbot" && <Chartbot />}
+            {page==="charts"   && <ChartsExplorer  key="charts" showNotif={showNotif}/>}
+            {page==="download" && <DownloadReports key="dl"     showNotif={showNotif}/>}
+            {page==="admin"    && <AdminPanel      key="admin"  showNotif={showNotif}/>}
           </div>
         </div>
       </div>
 
       {notif && (
         <div className="notif">
-          <I d={ic.check} size={16} c="#4ade80" /> {notif}
+          <I d={ic.check} size={16} c="#4ade80"/> {notif}
         </div>
       )}
     </>
