@@ -10,10 +10,13 @@ dotenv.config();
 const cors = require("cors");
 app.use(cors());
 const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGODB_URI).then(() => {
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000,
+}).then(() => {
   console.log("Connected to MongoDB");
 }).catch((err) => {
-  console.log(err);
+  console.error("MongoDB connection error:", err.message);
+  console.log("Tip: Ensure MongoDB is running locally at " + process.env.MONGODB_URI);
 });
 
 
